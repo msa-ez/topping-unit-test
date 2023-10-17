@@ -32,7 +32,7 @@ import {{options.package}}.domain.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class {{namePascalCase}}EventTest {
+public class {{namePascalCase}}Test {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(EventTest.class);
    
@@ -42,30 +42,45 @@ public class {{namePascalCase}}EventTest {
    private MessageCollector messageCollector;
    @Autowired
    private ApplicationContext applicationContext;
-   @Autowired
-   public InventoryRepository repository;
 
+   {{#reaching "Aggregate" this}}
+   @Autowired
+   public {{pascalCase name}}Repository repository;
+   {{/reaching}}
+
+{{#examples}}
    @Test
    @SuppressWarnings("unchecked")
-   public void test{{namePascalCase}}() {
+   public void test{{@index}}() {
 
       //given:  
+   {{#reaching "Aggregate" ..}}
+      {{pascalCase name}} entity = new {{pascalCase name}}();
+   {{/reaching}}
 
+   {{#given}}
+   {{#each value}}
+      entity.set{{pascalCase @key}}({{this}});
+   {{/each}}
+   {{/given}}
 
       //when:  
       
-   {{#incoming "Event" this}}
-      {{pascalCase name}} {{camelCase name}} = new {{pascalCase name}}();
-      {{#fieldDescriptors}}
-      {{../nameCamelCase}}.set{{pascalCase name}}(...);
-      {{/fieldDescriptors}}
+   {{#incoming "Event" ..}}
+      {{pascalCase name}} event = new {{pascalCase name}}();
+   {{/incoming}}
 
-       
+   {{#when}}
+   {{#each value}}
+      event.set{{pascalCase @key}}({{this}});
+   {{/each}}
+   {{/when}}
+      
       InventoryApplication.applicationContext = applicationContext;
 
       ObjectMapper objectMapper = new ObjectMapper();
       try {
-         String msg = objectMapper.writeValueAsString({{camelCase name}});
+         String msg = objectMapper.writeValueAsString(event);
 
          processor.inboundTopic().send(
             MessageBuilder
@@ -74,26 +89,27 @@ public class {{namePascalCase}}EventTest {
                MessageHeaders.CONTENT_TYPE,
                MimeTypeUtils.APPLICATION_JSON
             )
-            .setHeader("type", {{camelCase name}}.getEventType())
+            .setHeader("type", event.getEventType())
             .build()
          );
 
-         // will happen something here.
-         
-         //then:   재고량이 1 줄어든 이벤트가 퍼블리시 되어야 할 것이다.
+         //then:
 
          Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
-   {{/incoming}}
 
-      {{#outgoing "Event" this}}
-         {{pascalCase name}} {{camelCase name}} = objectMapper.readValue(received.getPayload(), {{pascalCase name}}.class);
+
+      {{#outgoing "Event" ..}}
+         {{pascalCase name}} outputEvent = objectMapper.readValue(received.getPayload(), {{pascalCase name}}.class);
+      {{/outgoing}}
 
          LOGGER.info("Response received: {}", received.getPayload());
 
-         assertNotNull(received.getPayload());
-         assertEquals({{camelCase name}}.getId(), ...);
+      {{#then}}
+      {{#each value}}
+         assertEquals(outputEvent.get{{pascalCase @key}}(), {{this}});
+      {{/each}}
+      {{/then}}
 
-      {{/outgoing}}
 
       } catch (JsonProcessingException e) {
          // TODO Auto-generated catch block
@@ -102,7 +118,7 @@ public class {{namePascalCase}}EventTest {
 
      
    }
-
+{{/examples}}
 
 }
 
