@@ -1,0 +1,9 @@
+name: Unit Test for Microservices
+rating: 5
+imageUrl: https://github.com/kibum0405/topping-wijmo/assets/59447401/3cf4bb64-9128-4eae-8aba-7e70cb8b55fb
+description: JUnit Test for Event driven microservices
+depends:
+  - spring-boot
+tags:
+  - Test
+  - Kafka
