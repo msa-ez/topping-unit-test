@@ -64,6 +64,8 @@ public class {{namePascalCase}}Test {
    {{/each}}
    {{/given}}
 
+      repository.save(entity);
+
       //when:  
       
    {{#incoming "Event" ..}}
