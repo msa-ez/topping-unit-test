@@ -99,10 +99,12 @@ public class {{namePascalCase}}Test {
 
          Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
 
+         assertNotNull("Resulted event must be published", received);
 
       {{#outgoing "Event" ..}}
          {{pascalCase name}} outputEvent = objectMapper.readValue(received.getPayload(), {{pascalCase name}}.class);
       {{/outgoing}}
+
 
          LOGGER.info("Response received: {}", received.getPayload());
 
