@@ -48,6 +48,7 @@ public class {{namePascalCase}}Test {
    public {{pascalCase name}}Repository repository;
    {{/reaching}}
 
+ 
 {{#examples}}
    @Test
    @SuppressWarnings("unchecked")
@@ -67,33 +68,19 @@ public class {{namePascalCase}}Test {
       repository.save(entity);
 
       //when:  
-      
-   {{#incoming "Command" ..}}
-      {{pascalCase name}} event = new {{pascalCase name}}();
-   {{/incoming}}
+   
+   
+   {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
 
    {{#when}}
    {{#each value}}
-      event.set{{pascalCase @key}}({{{toJava this}}});
+      command.set{{pascalCase @key}}({{{toJava this}}});
    {{/each}}
    {{/when}}
       
-      InventoryApplication.applicationContext = applicationContext;
-
-      ObjectMapper objectMapper = new ObjectMapper();
+      
       try {
-         String msg = objectMapper.writeValueAsString(event);
-
-         processor.inboundTopic().send(
-            MessageBuilder
-            .withPayload(msg)
-            .setHeader(
-               MessageHeaders.CONTENT_TYPE,
-               MimeTypeUtils.APPLICATION_JSON
-            )
-            .setHeader("type", event.getEventType())
-            .build()
-         );
+	entity.{{camelCase ../name}}(command);
 
          //then:
 
@@ -165,3 +152,4 @@ function convertToJavaSyntax(value) {
 }
 
 </function>
+
