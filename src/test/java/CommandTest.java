@@ -48,7 +48,6 @@ public class {{namePascalCase}}Test {
    public {{pascalCase name}}Repository repository;
    {{/reaching}}
 
- 
 {{#examples}}
    @Test
    @SuppressWarnings("unchecked")
@@ -56,31 +55,66 @@ public class {{namePascalCase}}Test {
 
       //given:  
    {{#reaching "Aggregate" ..}}
-      {{pascalCase name}} entity = new {{pascalCase name}}();
+      {{pascalCase name}} existingEntity = new {{pascalCase name}}();
    {{/reaching}}
 
    {{#given}}
    {{#each value}}
-      entity.set{{pascalCase @key}}({{{toJava this}}});
+      existingEntity.set{{pascalCase @key}}({{{toJava this}}});
    {{/each}}
    {{/given}}
 
-      repository.save(entity);
+      repository.save(existingEntity);
 
       //when:  
-   
-   
-   {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
 
-   {{#when}}
-   {{#each value}}
-      command.set{{pascalCase @key}}({{{toJava this}}});
-   {{/each}}
-   {{/when}}
-      
+  
       
       try {
-	entity.{{camelCase ../name}}(command);
+
+
+   {{#ifEquals @root/restRepositoryInfo/method "POST"}}
+      {{#reaching "Aggregate" ..}}
+      {{pascalCase name}} newEntity = new {{pascalCase name}}();
+      {{/reaching}}
+
+      {{#when}}
+      {{#each value}}
+         newEntity.set{{pascalCase @key}}({{{toJava this}}});
+      {{/each}}
+      {{/when}}
+
+      repository.save(newEntity);
+
+
+   {{else}}{{#ifEquals @root/restRepositoryInfo/method "DELETE"}}
+      {{#reaching "Aggregate" ..}}
+      {{pascalCase name}} theEntity = new {{pascalCase name}}();
+      {{/reaching}}
+
+      {{#when}}
+      {{#each value}}
+         newEntity.set{{pascalCase @key}}({{{toJava this}}});
+      {{/each}}
+      {{/when}}
+
+      repository.delete(theEntity);
+   {{else}}
+
+      {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
+
+      {{#when}}
+      {{#each value}}
+         command.set{{pascalCase @key}}({{{toJava this}}});
+      {{/each}}
+      {{/when}}
+
+      existingEntity.{{camelCase ../name}}(command);
+
+   {{/ifEquals}}
+   {{/ifEquals}}
+
+           
 
          //then:
 
@@ -152,4 +186,6 @@ function convertToJavaSyntax(value) {
 }
 
 </function>
+
+
 
