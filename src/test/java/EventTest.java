@@ -34,7 +34,7 @@ import {{options.package}}.domain.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class {{namePascalCase}}Test {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(EventTest.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}EventTest.class);
    
    @Autowired
    private KafkaProcessor processor;
@@ -43,20 +43,33 @@ public class {{namePascalCase}}Test {
    @Autowired
    private ApplicationContext applicationContext;
 
-   {{#reaching "Aggregate" this}}
+   {{#outgoingCommandInfo}}
+   {{#commandValue}}
+   {{#aggregate}}
    @Autowired
-   public {{pascalCase name}}Repository repository;
-   {{/reaching}}
+   public {{namePascalCase}}Repository repository;
+   {{/aggregate}}
+   {{/commandValue}}
+   {{/outgoingCommandInfo}}
 
 {{#examples}}
    @Test
    @SuppressWarnings("unchecked")
    public void test{{@index}}() {
 
-      //given:  
-   {{#reaching "Aggregate" ..}}
-      {{pascalCase name}} entity = new {{pascalCase name}}();
-   {{/reaching}}
+      //given:
+   {{#../outgoingCommandInfo}}
+   {{#commandValue}}
+   {{#aggregate}}
+   @Autowired
+   {{pascalCase name}} entity = new {{pascalCase name}}();
+   {{/aggregate}}
+   {{/commandValue}}
+   {{/../outgoingCommandInfo}}
+
+   // {{#reaching "Aggregate" ..}}
+   //    {{pascalCase name}} entity = new {{pascalCase name}}();
+   // {{/reaching}}
 
    {{#given}}
    {{#each value}}
@@ -77,8 +90,15 @@ public class {{namePascalCase}}Test {
       event.set{{pascalCase @key}}({{{toJava this}}});
    {{/each}}
    {{/when}}
-      
-      InventoryApplication.applicationContext = applicationContext;
+   
+   
+   {{#../outgoingCommandInfo}}
+   {{#commandValue}}
+   {{#aggregate}}
+   {{namePascalCase}}Application.applicationContext = applicationContext;
+   {{/aggregate}}
+   {{/commandValue}}
+   {{/../outgoingCommandInfo}}
 
       ObjectMapper objectMapper = new ObjectMapper();
       try {
