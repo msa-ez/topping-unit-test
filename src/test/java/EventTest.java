@@ -34,7 +34,7 @@ import {{options.package}}.domain.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class {{namePascalCase}}Test {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}EventTest.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}Test.class);
    
    @Autowired
    private KafkaProcessor processor;
@@ -61,15 +61,10 @@ public class {{namePascalCase}}Test {
    {{#../outgoingCommandInfo}}
    {{#commandValue}}
    {{#aggregate}}
-   @Autowired
    {{pascalCase name}} entity = new {{pascalCase name}}();
    {{/aggregate}}
    {{/commandValue}}
    {{/../outgoingCommandInfo}}
-
-   // {{#reaching "Aggregate" ..}}
-   //    {{pascalCase name}} entity = new {{pascalCase name}}();
-   // {{/reaching}}
 
    {{#given}}
    {{#each value}}
