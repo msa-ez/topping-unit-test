@@ -1,7 +1,7 @@
 forEach: Command
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
-except: {{^examples}}
+except: {{{{#checkExamples examples}}{{/checkExamples}}}}
 ---
 
 package {{options.package}};
@@ -193,6 +193,10 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
       }else{
       }
    }
+});
+
+window.$HandleBars.registerHelper('checkExamples', function (examples) {
+   if(!examples)return true
 });
 
 </function>

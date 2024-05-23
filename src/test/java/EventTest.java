@@ -1,7 +1,7 @@
 forEach: Policy
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
-except: !{{examples}}
+except: {{#checkExamples examples}}{{/checkExamples}}
 ---
 
 package {{options.package}};
@@ -179,5 +179,9 @@ function convertToJavaSyntax(value) {
       throw new Error(`Unsupported type: ${type}`);
   }
 }
+
+window.$HandleBars.registerHelper('checkExamples', function (examples) {
+   if(!examples)return true
+});
 
 </function>
