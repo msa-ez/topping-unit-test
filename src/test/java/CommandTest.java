@@ -188,6 +188,8 @@ function convertToJavaSyntax(value) {
 window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelations) {
    for(var i = 0; i< incomingRelations.length; i++){
       if(incomingRelations[i].source.type == "Policy"){
+         return
+      }else{
          return true;
       }
    }
