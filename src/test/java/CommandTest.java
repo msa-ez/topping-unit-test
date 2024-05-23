@@ -189,9 +189,9 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
    for(var i = 0; i< incomingRelations.length; i++){
       if(incomingRelations[i].source._type.endsWith("Policy")){
          return options.fn(this);
+      }else{
+         return
       }
-   }else{
-      return
    }
 });
 
