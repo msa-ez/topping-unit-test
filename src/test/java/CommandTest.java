@@ -1,6 +1,7 @@
 forEach: Command
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
+except: {{#checkIncomingType incomingRelations}}{{/checkIncomingType}}
 ---
 
 package {{options.package}};
@@ -184,8 +185,15 @@ function convertToJavaSyntax(value) {
       throw new Error(`Unsupported type: ${type}`);
   }
 }
+window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelations, options) {
+   for(var i = 0; i< incomingRelations.length; i++){
+      if(incomingRelations[i].source._type.endsWith("Policy")){
+         return options.fn(this);
+      }
+   }else{
+      return
+   }
+});
 
 </function>
-
-
 
