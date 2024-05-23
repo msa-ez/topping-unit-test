@@ -1,7 +1,7 @@
 forEach: Command
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
-except: {{#checkIncomingType incomingRelations}}{{/checkIncomingType}}
+except: {{^examples}}
 ---
 
 package {{options.package}};

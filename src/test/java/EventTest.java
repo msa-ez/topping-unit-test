@@ -1,6 +1,7 @@
 forEach: Policy
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
+except: {{^examples}}
 ---
 
 package {{options.package}};
