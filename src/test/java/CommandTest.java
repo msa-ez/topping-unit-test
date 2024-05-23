@@ -186,11 +186,11 @@ function convertToJavaSyntax(value) {
   }
 }
 window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelations) {
+   if(!incomingRelations)return
    for(var i = 0; i< incomingRelations.length; i++){
       if(incomingRelations[i].source.type == "Policy"){
-         return
-      }else{
          return true;
+      }else{
       }
    }
 });
