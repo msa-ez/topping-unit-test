@@ -185,12 +185,10 @@ function convertToJavaSyntax(value) {
       throw new Error(`Unsupported type: ${type}`);
   }
 }
-window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelations, options) {
+window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelations) {
    for(var i = 0; i< incomingRelations.length; i++){
-      if(incomingRelations[i].source._type.endsWith("Policy")){
-         return options.fn(this);
-      }else{
-         return
+      if(incomingRelations[i].source.type == "Policy"){
+         return true;
       }
    }
 });
