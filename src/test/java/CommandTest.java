@@ -149,6 +149,12 @@ public class {{namePascalCase}}Test {
 }
 
 <function>
+var givenField = []
+for(var i = 0; i < this.aggregateList.length; i++){
+   givenField = this.aggregateList[0].aggregateRoot.fieldDescriptors;
+}
+var whenField = this.incomingRelations[0].source.fieldDescriptors;
+var thenField = this.outgoingRelations[0].target.fieldDescriptors;
 
 window.$HandleBars.registerHelper('toJava', convertToJavaSyntax)
 
@@ -197,6 +203,68 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
    if(!examples)return true
+});
+
+window.$HandleBars.registerHelper('setGivenField', function (key, value) {
+   var type = 'String';
+   for(var i = 0; i < givenField.length; i++){
+      if(givenField[i].name == key){
+         type = givenField[i].className
+      }
+   }
+   switch (type) {
+      case 'String':
+         return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
+      case 'Long':
+         return `${value}L`;
+      case 'Integer':
+         return `${value}`;
+      case 'Boolean':
+      return value.toString();
+      default:
+      throw new Error(`Unsupported type: ${type}`);
+   }
+});
+
+window.$HandleBars.registerHelper('setWhenField', function (key, value) {
+   var type = 'String';
+   for(var i = 0; i < whenField.length; i++){
+      if(whenField[i].name == key){
+         type = whenField[i].className
+      }
+   }
+   switch (type) {
+      case 'String':
+         return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
+      case 'Long':
+         return `${value}L`;
+      case 'Integer':
+         return `${value}`;
+      case 'Boolean':
+      return value.toString();
+      default:
+      throw new Error(`Unsupported type: ${type}`);
+   }
+});
+window.$HandleBars.registerHelper('setThenField', function (key, value) {
+   var type = 'String';
+   for(var i = 0; i < thenField.length; i++){
+      if(thenField[i].name == key){
+         type = thenField[i].className
+      }
+   }
+   switch (type) {
+      case 'String':
+         return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
+      case 'Long':
+         return `${value}L`;
+      case 'Integer':
+         return `${value}`;
+      case 'Boolean':
+      return value.toString();
+      default:
+      throw new Error(`Unsupported type: ${type}`);
+   }
 });
 
 </function>
