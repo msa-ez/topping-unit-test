@@ -69,7 +69,7 @@ public class {{namePascalCase}}Test {
 
    {{#given}}
    {{#each value}}
-      entity.set{{pascalCase @key}}({{{toJava this}}});
+      entity.set{{pascalCase @key}}({{toJava @key this}});
    {{/each}}
    {{/given}}
 
@@ -143,41 +143,54 @@ public class {{namePascalCase}}Test {
 }
 
 <function>
+   var field = []
+   for(var i = 0; i < this.aggregateList.length; i++){
+      field = this.aggregateList[0].aggregateRoot.fieldDescriptors;
+   }
 
 window.$HandleBars.registerHelper('toJava', convertToJavaSyntax)
 
-function convertToJavaSyntax(value) {
-  const type = typeof value;
-
-  switch (type) {
-    case 'string':
-      return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
-    case 'number':
-      // JavaScript의 숫자는 정수 또는 부동소수점일 수 있으므로 이를 구분해야 할 수도 있습니다.
-      if (Number.isSafeInteger(value)) {
-        return `${value}L`; // long 타입으로 간주할 수 있습니다.
-      } else {
-        return `${value}D`; // double 타입으로 간주할 수 있습니다.
+function convertToJavaSyntax(key, value) {
+   var type = 'string'
+   for(var i = 0; i < field.length; i++){
+      if(field[i].name == key){
+         type = field[i].className
       }
-    case 'boolean':
+   }
+   type = '${type}'
+   switch (type) {
+      case 'string':
+         return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
+      //  case 'Long':
+         // // JavaScript의 숫자는 정수 또는 부동소수점일 수 있으므로 이를 구분해야 할 수도 있습니다.
+         // if (Number.isSafeInteger(value)) {
+         //   return `${value}L`; // long 타입으로 간주할 수 있습니다.
+         // } else {
+         //   return `${value}D`; // double 타입으로 간주할 수 있습니다.
+         // }
+      case 'Long':
+         return `"${value}L";
+      case 'Integer':
+         return `"${value}"`;
+      case 'boolean':
       return value.toString();
-    case 'object':
+      case 'object':
       if (value instanceof Date) {
-        return `new Date(${value.getTime()}L)`; // Java의 Date 생성자를 사용합니다.
+         return `new Date(${value.getTime()}L)`; // Java의 Date 생성자를 사용합니다.
       } else if (value === null) {
-        return 'null';
+         return 'null';
       } else if (Array.isArray(value)) {
-        // 배열의 경우 더 복잡한 로직이 필요할 수 있으며, 이는 예시로만 제공됩니다.
-        const elements = value.map((element) => convertToJavaSyntax(element)).join(', ');
-        return `new Object[]{${elements}}`; // Object 배열로 간주합니다.
+         // 배열의 경우 더 복잡한 로직이 필요할 수 있으며, 이는 예시로만 제공됩니다.
+         const elements = value.map((element) => convertToJavaSyntax(element)).join(', ');
+         return `new Object[]{${elements}}`; // Object 배열로 간주합니다.
       } else {
-        // 다른 종류의 객체에 대한 처리가 필요할 수 있습니다.
-        // 이 경우 해당 객체를 적절한 Java 표현으로 변환하는 로직이 필요합니다.
-        return value.toString(); // 기본적인 toString 반환을 사용합니다.
+         // 다른 종류의 객체에 대한 처리가 필요할 수 있습니다.
+         // 이 경우 해당 객체를 적절한 Java 표현으로 변환하는 로직이 필요합니다.
+         return value.toString(); // 기본적인 toString 반환을 사용합니다.
       }
-    default:
+      default:
       throw new Error(`Unsupported type: ${type}`);
-  }
+   }
 }
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
