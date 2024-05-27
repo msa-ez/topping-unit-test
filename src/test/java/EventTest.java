@@ -69,7 +69,7 @@ public class {{namePascalCase}}Test {
 
    {{#given}}
    {{#each value}}
-      entity.set{{pascalCase @key}}({{toJava @key this}});
+      entity.set{{pascalCase @key}}({{toJava @key this ../name}});
    {{/each}}
    {{/given}}
 
@@ -83,7 +83,7 @@ public class {{namePascalCase}}Test {
 
    {{#when}}
    {{#each value}}
-      event.set{{pascalCase @key}}({{{toJava this}}});
+      event.set{{pascalCase @key}}({{{toJava @key this}}});
    {{/each}}
    {{/when}}
    
@@ -126,7 +126,7 @@ public class {{namePascalCase}}Test {
 
       {{#then}}
       {{#each value}}
-         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
+         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava @key this}}});
       {{/each}}
       {{/then}}
 
@@ -143,14 +143,16 @@ public class {{namePascalCase}}Test {
 }
 
 <function>
-   var field = []
+   var givenField = []
    for(var i = 0; i < this.aggregateList.length; i++){
-      field = this.aggregateList[0].aggregateRoot.fieldDescriptors;
+      givenField = this.aggregateList[0].aggregateRoot.fieldDescriptors;
    }
+   var whenField = this.incomingRelations[0].source.fieldDescriptors;
+   var thenField = this.outgoingRelations[0].target.fieldDescriptors;
 
 window.$HandleBars.registerHelper('toJava', convertToJavaSyntax)
 
-function convertToJavaSyntax(key, value) {
+function convertToJavaSyntax(key, value, name) {
    var type = 'String'
    for(var i = 0; i < field.length; i++){
       if(field[i].name == key){
@@ -195,5 +197,27 @@ function convertToJavaSyntax(key, value) {
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
    if(!examples)return true
 });
+
+// window.$HandleBars.registerHelper('compareAndSetType', function (key, value, name) {
+//    var type = 'String';
+//    for(var i = 0; i < field.length; i++){
+//       if(field[i].name == key){
+//          type = field[i].className
+//       }
+//    }
+//    switch (type) {
+//       case 'String':
+//          return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
+//       case 'Long':
+//          return `${value}L`;
+//       case 'Integer':
+//          return `${value}`;
+//       case 'Boolean':
+//       return value.toString();
+//       default:
+//       throw new Error(`Unsupported type: ${type}`);
+//    }
+// });
+
 
 </function>
