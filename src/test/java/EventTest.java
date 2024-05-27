@@ -83,7 +83,7 @@ public class {{namePascalCase}}Test {
 
    {{#when}}
    {{#each value}}
-      event.set{{pascalCase @key}}({{#compareAndSetType @key this ../name}});
+      event.set{{pascalCase @key}}({{compareAndSetType @key this ../name}});
    {{/each}}
    {{/when}}
    
