@@ -198,9 +198,7 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
    if(!examples)return true
 });
 
-window.$HandleBars.registerHelper('setGivenField', convertToJavaSyntax)
-
-function convertToJavaSyntax (key, value) {
+window.$HandleBars.registerHelper('setGivenField', function (key, value) {
    var type = 'String';
    for(var i = 0; i < givenField.length; i++){
       if(givenField[i].name == key){
@@ -219,11 +217,9 @@ function convertToJavaSyntax (key, value) {
       default:
       throw new Error(`Unsupported type: ${type}`);
    }
-}
+});
 
-window.$HandleBars.registerHelper('setWhenField', convertToJavaSyntax) 
-
-function convertToJavaSyntax (key, value) {
+window.$HandleBars.registerHelper('setWhenField', function (key, value) {
    var type = 'String';
    for(var i = 0; i < whenField.length; i++){
       if(whenField[i].name == key){
@@ -242,10 +238,8 @@ function convertToJavaSyntax (key, value) {
       default:
       throw new Error(`Unsupported type: ${type}`);
    }
-}
-window.$HandleBars.registerHelper('setWhenField', convertToJavaSyntax) 
-
-function convertToJavaSyntax (key, value) {
+});
+window.$HandleBars.registerHelper('setThenField', function (key, value) {
    var type = 'String';
    for(var i = 0; i < thenField.length; i++){
       if(thenField[i].name == key){
@@ -264,7 +258,7 @@ function convertToJavaSyntax (key, value) {
       default:
       throw new Error(`Unsupported type: ${type}`);
    }
-}
+});
 
 
 </function>
