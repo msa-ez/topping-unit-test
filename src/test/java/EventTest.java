@@ -69,7 +69,7 @@ public class {{namePascalCase}}Test {
 
    {{#given}}
    {{#each value}}
-      entity.set{{pascalCase @key}}({{toJava @key this ../name}});
+      entity.set{{pascalCase @key}}({{compareAndSetType @key this ../name}});
    {{/each}}
    {{/given}}
 
@@ -83,7 +83,7 @@ public class {{namePascalCase}}Test {
 
    {{#when}}
    {{#each value}}
-      event.set{{pascalCase @key}}({{{toJava @key this}}});
+      event.set{{pascalCase @key}}({{{compareAndSetType @key this ../name}}});
    {{/each}}
    {{/when}}
    
@@ -126,7 +126,7 @@ public class {{namePascalCase}}Test {
 
       {{#then}}
       {{#each value}}
-         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava @key this}}});
+         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{compareAndSetType @key this ../name}}});
       {{/each}}
       {{/then}}
 
@@ -145,10 +145,10 @@ public class {{namePascalCase}}Test {
 <function>
    var givenField = []
    for(var i = 0; i < this.aggregateList.length; i++){
-      givenField = this.aggregateList[0].aggregateRoot.fieldDescriptors;
+      givenField = this.aggregateList[0]
    }
-   var whenField = this.incomingRelations[0].source.fieldDescriptors;
-   var thenField = this.outgoingRelations[0].target.fieldDescriptors;
+   var whenField = this.incomingRelations[0]
+   var thenField = this.outgoingRelations[0]
 
 window.$HandleBars.registerHelper('toJava', convertToJavaSyntax)
 
@@ -198,26 +198,41 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
    if(!examples)return true
 });
 
-// window.$HandleBars.registerHelper('compareAndSetType', function (key, value, name) {
-//    var type = 'String';
-//    for(var i = 0; i < field.length; i++){
-//       if(field[i].name == key){
-//          type = field[i].className
-//       }
-//    }
-//    switch (type) {
-//       case 'String':
-//          return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
-//       case 'Long':
-//          return `${value}L`;
-//       case 'Integer':
-//          return `${value}`;
-//       case 'Boolean':
-//       return value.toString();
-//       default:
-//       throw new Error(`Unsupported type: ${type}`);
-//    }
-// });
+window.$HandleBars.registerHelper('compareAndSetType', function (key, value, name) {
+   var type = 'String';
+
+   if(name == givenField.name){
+      for(var i = 0; i < givenField.aggregateRoot.fieldDescriptors.length; i++){
+         if(givenField.aggregateRoot.fieldDescriptors[i].name == key){
+            type = givenField.aggregateRoot.fieldDescriptors[i].className
+         }
+      }
+   }else if(name == whenField.name){
+      for(var i = 0; i < whenField.source.fieldDescriptors.length; i++){
+         if(whenField.source.fieldDescriptors[i].name == key){
+            type = whenField.source.fieldDescriptors[i].className
+         }
+      }
+   }else if(name == thenField.name){
+      for(var i = 0; i < thenField.target.fieldDescriptors.length; i++){
+         if(thenField.target.fieldDescriptors[i].name == key){
+            type = thenField.target.fieldDescriptors[i].className
+         }
+      }
+   }
+   switch (type) {
+      case 'String':
+         return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
+      case 'Long':
+         return `${value}L`;
+      case 'Integer':
+         return `${value}`;
+      case 'Boolean':
+      return value.toString();
+      default:
+      throw new Error(`Unsupported type: ${type}`);
+   }
+});
 
 
 </function>
