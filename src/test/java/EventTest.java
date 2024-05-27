@@ -147,8 +147,12 @@ public class {{namePascalCase}}Test {
    for(var i = 0; i < this.aggregateList.length; i++){
       givenField = this.aggregateList[0].aggregateRoot.fieldDescriptors;
    }
-   if(this.incomingRelations)var whenField = this.incomingRelations[0].source.fieldDescriptors;
-   if(this.outgoingRelations)var thenField = this.outgoingRelations[0].target.fieldDescriptors;
+   if(this.incomingRelations){
+      var whenField = this.incomingRelations[0].source.fieldDescriptors;
+   }
+   if(this.outgoingRelations){
+      var thenField = this.outgoingRelations[0].target.fieldDescriptors;
+   }
 
    window.$HandleBars.registerHelper('toJava', convertToJavaSyntax)
 
