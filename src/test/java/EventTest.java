@@ -126,7 +126,7 @@ public class {{namePascalCase}}Test {
 
       {{#then}}
       {{#each value}}
-         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{compareAndSetType @key this ../name}}});
+         assertEquals(outputEvent.get{{pascalCase @key}}(), {{compareAndSetType @key this ../name}});
       {{/each}}
       {{/then}}
 
