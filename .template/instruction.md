@@ -14,6 +14,6 @@
 
 ### How To Run
 ```
-cd microservice
+cd <microservice>
 mvn test
 ```
