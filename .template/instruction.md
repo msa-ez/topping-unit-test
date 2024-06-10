@@ -12,7 +12,7 @@
 
 #### Unit testing with the Given-When-Then pattern systematically verifies that each part of the code performs as expected, significantly contributing to the quality of the software.
 
-### How To Run
+### How to run
 ```
 cd <microservice>
 mvn test
