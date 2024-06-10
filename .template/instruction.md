@@ -11,3 +11,9 @@
 #### 5. Documentation: Unit tests themselves can act as documentation, showing how a feature should be used. New developers can quickly understand the intent and usage of features through unit tests.
 
 #### Unit testing with the Given-When-Then pattern systematically verifies that each part of the code performs as expected, significantly contributing to the quality of the software.
+
+### How To Run
+```
+cd microservice
+mvn test
+```
