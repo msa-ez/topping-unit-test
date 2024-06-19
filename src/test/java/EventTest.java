@@ -203,8 +203,7 @@ window.$HandleBars.registerHelper('setGivenField', function (key, value) {
    }
    switch (type) {
       case 'String':
-         value = "'"+ value + "'"
-         return value; // Java에서 문자열은 큰따옴표를 사용합니다.
+         return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
       case 'Long':
          return `${value}L`;
       case 'Integer':
@@ -225,8 +224,7 @@ window.$HandleBars.registerHelper('setWhenField', function (key, value) {
    }
    switch (type) {
       case 'String':
-         value = "'"+ value + "'"
-         return value; // Java에서 문자열은 큰따옴표를 사용합니다.
+         return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
       case 'Long':
          return `${value}L`;
       case 'Integer':
@@ -246,8 +244,7 @@ window.$HandleBars.registerHelper('setThenField', function (key, value) {
    }
    switch (type) {
       case 'String':
-         value = "'"+ value + "'"
-         return value; // Java에서 문자열은 큰따옴표를 사용합니다.
+         return `"${value}"`; // Java에서 문자열은 큰따옴표를 사용합니다.
       case 'Long':
          return `${value}L`;
       case 'Integer':
