@@ -220,11 +220,12 @@ window.$HandleBars.registerHelper('setWhenField', function (key, value) {
    for(var i = 0; i < whenField.length; i++){
       if(whenField[i].name == key){
          type = whenField[i].className
+         if(type == "String"){
+            return "\"" + value + "\"";
+         }
       }
    }
    switch (type) {
-      case 'String':
-         return "\"" + value + "\"" // Java에서 문자열은 큰따옴표를 사용합니다.
       case 'Long':
          return `${value}L`;
       case 'Integer':
