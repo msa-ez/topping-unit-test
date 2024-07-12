@@ -2,6 +2,9 @@ name: Unit Test for Microservices
 rating: 5
 imageUrl: https://github.com/msa-ez/template-spring-boot-3/assets/123912988/59b786b5-28c5-425e-b082-7bc09680ebb1
 description: JUnit Test for Event driven microservices
+depends:
+  - spring-boot
+  - template-spring-boot
 tags:
   - Test
   - Kafka
