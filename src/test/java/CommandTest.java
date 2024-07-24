@@ -35,7 +35,7 @@ import {{options.package}}.domain.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class {{namePascalCase}}Test {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}Test.class);
    
    @Autowired
    private KafkaProcessor processor;
