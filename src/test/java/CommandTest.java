@@ -119,28 +119,12 @@ public class {{namePascalCase}}Test {
 
          //then:
 
-         // Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
-
-         // assertNotNull("Resulted event must be published", received);
-
-      {{#outgoing "Event" ..}}
-         // {{pascalCase name}} outputEvent = objectMapper.readValue(received.getPayload(), {{pascalCase name}}.class);
-      {{/outgoing}}
 
 
-         // LOGGER.info("Response received: {}", received.getPayload());
-
-      {{#then}}
-      {{#each value}}
-         // assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
-      {{/each}}
-      {{/then}}
-
-
-      // } catch (JsonProcessingException e) {
-      //    // TODO Auto-generated catch block
-      //    assertTrue("exception", false);
-      // }
+      } catch (JsonProcessingException e) {
+         // TODO Auto-generated catch block
+         assertTrue("exception", false);
+      }
 
      
    }
