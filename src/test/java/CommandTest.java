@@ -119,12 +119,12 @@ public class {{namePascalCase}}Test {
 
          //then:
 
-         // Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
+         Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
 
-         // assertNotNull("Resulted event must be published", received);
+         assertNotNull("Resulted event must be published", received);
 
       {{#outgoing "Event" ..}}
-         // {{pascalCase name}} outputEvent = objectMapper.readValue(received.getPayload(), {{pascalCase name}}.class);
+         {{pascalCase name}} outputEvent = objectMapper.readValue(received.getPayload(), {{pascalCase name}}.class);
       {{/outgoing}}
 
 
@@ -132,7 +132,7 @@ public class {{namePascalCase}}Test {
 
       {{#then}}
       {{#each value}}
-         // assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
+         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
       {{/each}}
       {{/then}}
 
