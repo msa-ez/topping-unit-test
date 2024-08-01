@@ -12,12 +12,12 @@ ifDuplicated: merge
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId isKey="true">spring-cloud-stream-test-support</artifactId>
+			<artifactId>spring-cloud-stream-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId isKey="true">spring-cloud-starter-contract-verifier</artifactId>
+			<artifactId>spring-cloud-starter-contract-verifier</artifactId>
 			<version>${spring-cloud-contract.version}</version>
 			<scope>test</scope>
 		</dependency>
