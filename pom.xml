@@ -2,10 +2,6 @@ fileName: pom.xml
 ifDuplicated: merge
 ---
 <project>
-	<properties>
-		<spring-cloud-contract.version isKey=true>2.1.1.RELEASE</spring-cloud-contract.version>
-	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -14,9 +10,29 @@ ifDuplicated: merge
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId isKey=true>spring-cloud-starter-contract-verifier</artifactId>
+			<artifactId>spring-cloud-starter-contract-verifier</artifactId>
 			<version>${spring-cloud-contract.version}</version>
 			<scope>test</scope>
 		</dependency>
-    </dependencies>
+    	</dependencies>
+	<build>
+	    <plugins>
+	      	<plugin>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-contract-maven-plugin</artifactId>
+			<version>${spring-cloud-contract.version}</version>
+			<extensions>true</extensions>
+			<configuration>
+				<packageWithBaseClasses>com.example.template</packageWithBaseClasses>
+				<baseClassMappings>
+					<baseClassMapping>
+						<contractPackageRegex>.*com.*</contractPackageRegex>
+						<baseClassFQN>com.example.template.MessagingBase</baseClassFQN>
+					</baseClassMapping>
+				</baseClassMappings>
+				<testMode>EXPLICIT</testMode>
+			</configuration>
+		</plugin>
+	    </plugins>
+	  </build>
 </project>
