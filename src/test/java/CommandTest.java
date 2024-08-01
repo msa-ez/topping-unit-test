@@ -149,7 +149,7 @@ public class {{namePascalCase}}Test {
       {{#outgoing "Event" ..}}
          String receivedPayload = (String) receivedMessage.getPayload();
 
-         NewItemAdded outputEvent = objectMapper.readValue(receivedPayload, NewItemAdded.class);
+         {{pascalCase name}} outputEvent = objectMapper.readValue(receivedPayload, NewItemAdded.class);
       {{/outgoing}}
 
 
