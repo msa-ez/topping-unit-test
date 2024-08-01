@@ -2,10 +2,20 @@ fileName: pom.xml
 ifDuplicated: merge
 ---
 <project>
+	<properties>
+		<spring-cloud-contract.version isKey=true>2.1.1.RELEASE</spring-cloud-contract.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId isKey="true">spring-cloud-stream-test-support</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId isKey=true>spring-cloud-starter-contract-verifier</artifactId>
+			<version>${spring-cloud-contract.version}</version>
 			<scope>test</scope>
 		</dependency>
     </dependencies>
