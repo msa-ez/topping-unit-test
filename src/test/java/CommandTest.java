@@ -144,7 +144,7 @@ public class {{namePascalCase}}Test {
                 .build(), {{{toJava ../options.package}}});
 
          Message<?> receivedMessage = this.messageVerifier.receive({{{toJava ../options.package}}}, 5000, TimeUnit.MILLISECONDS);
-         assertNotNull("Resulted event must be published", received);
+         assertNotNull("Resulted event must be published", receivedMessage);
 
       {{#outgoing "Event" ..}}
          String receivedPayload = (String) receivedMessage.getPayload();
