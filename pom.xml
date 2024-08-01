@@ -3,6 +3,10 @@ ifDuplicated: merge
 ---
 <project>
 	<properties>
+		<java.version>11</java.version>
+		<spring-cloud.version>Hoxton.SR12</spring-cloud.version>
+	    	<spring-cloud-stream.version>Germantown.SR1</spring-cloud-stream.version>
+	    	<cucumber.version>6.8.1</cucumber.version>
 		<spring-cloud-contract.version>2.1.1.RELEASE</spring-cloud-contract.version>
 	</properties>
 	<dependencies>
@@ -19,10 +23,15 @@ ifDuplicated: merge
 		</dependency>
     	</dependencies>
 	<build>
+
+	    <plugin>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-maven-plugin</artifactId>
+	    </plugin>
 	    <plugins>
 	      	<plugin>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId isKey="true">spring-cloud-contract-maven-plugin</artifactId>
+			<artifactId>spring-cloud-contract-maven-plugin</artifactId>
 			<version>${spring-cloud-contract.version}</version>
 			<extensions>true</extensions>
 			<configuration>
