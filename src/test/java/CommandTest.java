@@ -141,9 +141,9 @@ public class {{namePascalCase}}Test {
          this.messageVerifier.send(MessageBuilder
                 .withPayload(newEntity)
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
-                .build(), {{{toJava options.package}}});
+                .build(), {{{toJava ../options.package}}});
 
-         Message<?> receivedMessage = this.messageVerifier.receive({{{toJava options.package}}}, 5000, TimeUnit.MILLISECONDS);
+         Message<?> receivedMessage = this.messageVerifier.receive({{{toJava ../options.package}}}, 5000, TimeUnit.MILLISECONDS);
          assertNotNull("Resulted event must be published", received);
 
       {{#outgoing "Event" ..}}
