@@ -30,8 +30,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.springframework.cloud.contract.verifier.messaging.MessageVerifier;
 import org.springframework.cloud.contract.verifier.messaging.boot.AutoConfigureMessageVerifier;
-import org.springframework.messaging.MessageHeaders;
-import org.springframework.messaging.support.MessageBuilder;
 
 import javax.inject.Inject;
 import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessage;
