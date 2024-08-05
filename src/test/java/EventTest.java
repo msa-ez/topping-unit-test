@@ -118,7 +118,7 @@ public class {{namePascalCase}}Test {
          String msg = objectMapper.writeValueAsString(event);
 
          this.messageVerifier.send(MessageBuilder
-                .withPayload(newEntity)
+                .withPayload(msg)
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
                 .setHeader("type", event.getEventType())
                 .build(), {{{toJava ../options.package}}});
