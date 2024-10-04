@@ -43,14 +43,10 @@ public class {{namePascalCase}}Test {
    @Autowired
    private ApplicationContext applicationContext;
 
-   {{#outgoingCommandInfo}}
-   {{#commandValue}}
-   {{#aggregate}}
+   {{#aggregateList}}
    @Autowired
    public {{namePascalCase}}Repository repository;
-   {{/aggregate}}
-   {{/commandValue}}
-   {{/outgoingCommandInfo}}
+   {{/aggregateList}}
 
 {{#examples}}
    @Test
@@ -58,13 +54,9 @@ public class {{namePascalCase}}Test {
    public void test{{@index}}() {
 
       //given:
-   {{#../outgoingCommandInfo}}
-   {{#commandValue}}
-   {{#aggregate}}
+   {{#aggregateList}}
    {{pascalCase name}} entity = new {{pascalCase name}}();
-   {{/aggregate}}
-   {{/commandValue}}
-   {{/../outgoingCommandInfo}}
+   {{/aggregateList}}
 
    {{#given}}
    {{#each value}}
@@ -96,6 +88,7 @@ public class {{namePascalCase}}Test {
    {{/../outgoingCommandInfo}}
 
       ObjectMapper objectMapper = new ObjectMapper();
+      ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
       try {
          String msg = objectMapper.writeValueAsString(event);
 
@@ -131,8 +124,9 @@ public class {{namePascalCase}}Test {
 
 
       } catch (JsonProcessingException e) {
-         // TODO Auto-generated catch block
-         assertTrue("exception", false);
+         e.printStackTrace();
+         assertTrue(e.getMessage(), false);
+         
       }
 
      

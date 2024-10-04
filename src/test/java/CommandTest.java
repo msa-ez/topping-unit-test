@@ -138,8 +138,8 @@ public class {{namePascalCase}}Test {
 
 
       } catch (JsonProcessingException e) {
-         // TODO Auto-generated catch block
-         assertTrue("exception", false);
+         e.printStackTrace();
+         assertTrue(e.getMessage(), false);
       }
 
      
