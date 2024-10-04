@@ -103,7 +103,7 @@ public class {{namePascalCase}}Test {
    {{/commandValue}}
    {{/../outgoingCommandInfo}}
 
-      ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+      ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       try {
          String msg = objectMapper.writeValueAsString(event);
 
@@ -120,7 +120,7 @@ public class {{namePascalCase}}Test {
          assertNotNull("Resulted event must be published", receivedMessage);
 
       {{#outgoing "Event" ..}}
-         {{pascalCase name}} outputEvent = objectMapper.readValue((String)receivedMessage.getPayload(), {{pascalCase name}}.class);
+         {{pascalCase name}} outputEvent = objectMapper.readValue((String) receivedMessage.getPayload(), {{pascalCase name}}.class);
       {{/outgoing}}
 
 
