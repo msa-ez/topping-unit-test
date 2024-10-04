@@ -67,7 +67,7 @@ public class {{namePascalCase}}Test {
 
       //given:
    {{#aggregateList}}
-   {{pascalCase name}} entity = new {{pascalCase name}}();
+   {{namePascalCase}} entity = new {{namePascalCase}}();
    {{/aggregateList}}
 
    {{#given}}
