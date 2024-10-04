@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,9 @@ public class {{namePascalCase}}Test {
    public {{namePascalCase}}Repository repository;
    {{/aggregateList}}
 
+   @Autowired
+   private MessageVerifier<Message<?>> messageVerifier;
+
 {{#examples}}
    @Test
    @SuppressWarnings("unchecked")
@@ -99,8 +103,7 @@ public class {{namePascalCase}}Test {
    {{/commandValue}}
    {{/../outgoingCommandInfo}}
 
-      ObjectMapper objectMapper = new ObjectMapper();
-      ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+      ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
       try {
          String msg = objectMapper.writeValueAsString(event);
 
@@ -117,7 +120,7 @@ public class {{namePascalCase}}Test {
          assertNotNull("Resulted event must be published", receivedMessage);
 
       {{#outgoing "Event" ..}}
-         {{pascalCase name}} outputEvent = objectMapper.readValue(receivedMessage.getPayload(), {{pascalCase name}}.class);
+         {{pascalCase name}} outputEvent = objectMapper.readValue((String)receivedMessage.getPayload(), {{pascalCase name}}.class);
       {{/outgoing}}
 
 
