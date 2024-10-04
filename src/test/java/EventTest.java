@@ -66,9 +66,7 @@ public class {{namePascalCase}}Test {
    public void test{{@index}}() {
 
       //given:
-   {{#aggregateList}}
-   {{namePascalCase}} entity = new {{namePascalCase}}();
-   {{/aggregateList}}
+   {{../aggregateList.namePascalCase}} entity = new {{../aggregateList.namePascalCase}}();
 
    {{#given}}
    {{#each value}}
