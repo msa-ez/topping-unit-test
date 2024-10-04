@@ -10,10 +10,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.stream.messaging.Processor;
@@ -25,17 +25,6 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.MimeTypeUtils;
 
-import java.util.concurrent.TimeUnit;
-
-import org.junit.Before;
-import org.springframework.cloud.contract.verifier.messaging.MessageVerifier;
-import org.springframework.cloud.contract.verifier.messaging.boot.AutoConfigureMessageVerifier;
-
-import javax.inject.Inject;
-import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessage;
-import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessaging;
-import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierObjectMapper;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,7 +33,6 @@ import {{options.package}}.domain.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMessageVerifier
 public class {{namePascalCase}}Test {
 
    private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}Test.class);
@@ -60,9 +48,6 @@ public class {{namePascalCase}}Test {
    @Autowired
    public {{namePascalCase}}Repository repository;
    {{/aggregateList}}
-
-   @Autowired
-   private MessageVerifier<Message<?>> messageVerifier;
 
 {{#examples}}
    @Test
@@ -95,48 +80,49 @@ public class {{namePascalCase}}Test {
    {{/when}}
    
    
-   {{#../outgoingCommandInfo}}
-   {{#commandValue}}
-   {{#aggregate}}
+   {{#../aggregateList}}
    {{namePascalCase}}Application.applicationContext = applicationContext;
-   {{/aggregate}}
-   {{/commandValue}}
-   {{/../outgoingCommandInfo}}
+   {{/../aggregateList}}
 
       ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       try {
          String msg = objectMapper.writeValueAsString(event);
 
-         this.messageVerifier.send(MessageBuilder
-                .withPayload(msg)
-                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
-                .setHeader("type", event.getEventType())
-                .build(), {{{toJava ../options.package}}});
+         processor.inboundTopic().send(
+            MessageBuilder
+            .withPayload(msg)
+            .setHeader(
+               MessageHeaders.CONTENT_TYPE,
+               MimeTypeUtils.APPLICATION_JSON
+            )
+            .setHeader("type", event.getEventType())
+            .build()
+         );
 
          //then:
 
-         Message<?> receivedMessage = this.messageVerifier.receive({{{toJava ../options.package}}}, 5000, TimeUnit.MILLISECONDS);
+         Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
 
-         assertNotNull("Resulted event must be published", receivedMessage);
+         assertNotNull("Resulted event must be published", received);
 
       {{#outgoing "Event" ..}}
-         {{pascalCase name}} outputEvent = objectMapper.readValue((String) receivedMessage.getPayload(), {{pascalCase name}}.class);
+         {{pascalCase name}} outputEvent = objectMapper.readValue((String)received.getPayload(), {{pascalCase name}}.class);
       {{/outgoing}}
 
 
-         LOGGER.info("Response received: {}", receivedMessage.getPayload());
+         LOGGER.info("Response received: {}", received.getPayload());
 
       {{#then}}
       {{#each value}}
-         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
+         assertEquals(String.valueOf(outputEvent.get{{pascalCase @key}}()), {{{toJava this}}});
       {{/each}}
       {{/then}}
 
 
       } catch (JsonProcessingException e) {
+         // TODO Auto-generated catch block
          e.printStackTrace();
          assertTrue(e.getMessage(), false);
-         
       }
 
      
