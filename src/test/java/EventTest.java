@@ -24,6 +24,17 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.MimeTypeUtils;
 
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Before;
+import org.springframework.cloud.contract.verifier.messaging.MessageVerifier;
+import org.springframework.cloud.contract.verifier.messaging.boot.AutoConfigureMessageVerifier;
+
+import javax.inject.Inject;
+import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessage;
+import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessaging;
+import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierObjectMapper;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -32,6 +43,7 @@ import {{options.package}}.domain.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMessageVerifier
 public class {{namePascalCase}}Test {
 
    private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}Test.class);
@@ -92,29 +104,24 @@ public class {{namePascalCase}}Test {
       try {
          String msg = objectMapper.writeValueAsString(event);
 
-         processor.inboundTopic().send(
-            MessageBuilder
-            .withPayload(msg)
-            .setHeader(
-               MessageHeaders.CONTENT_TYPE,
-               MimeTypeUtils.APPLICATION_JSON
-            )
-            .setHeader("type", event.getEventType())
-            .build()
-         );
+         this.messageVerifier.send(MessageBuilder
+                .withPayload(msg)
+                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+                .setHeader("type", event.getEventType())
+                .build(), {{{toJava ../options.package}}});
 
          //then:
 
-         Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
+         Message<?> receivedMessage = this.messageVerifier.receive({{{toJava ../options.package}}}, 5000, TimeUnit.MILLISECONDS);
 
-         assertNotNull("Resulted event must be published", received);
+         assertNotNull("Resulted event must be published", receivedMessage);
 
       {{#outgoing "Event" ..}}
-         {{pascalCase name}} outputEvent = objectMapper.readValue(received.getPayload(), {{pascalCase name}}.class);
+         {{pascalCase name}} outputEvent = objectMapper.readValue(receivedMessage.getPayload(), {{pascalCase name}}.class);
       {{/outgoing}}
 
 
-         LOGGER.info("Response received: {}", received.getPayload());
+         LOGGER.info("Response received: {}", receivedMessage.getPayload());
 
       {{#then}}
       {{#each value}}
