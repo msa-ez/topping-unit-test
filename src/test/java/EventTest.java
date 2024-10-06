@@ -101,7 +101,7 @@ public class {{namePascalCase}}Test {
 
          //then:
 
-         Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
+         Message<String> received = (Message<String>) messageCollector.forChannel(processor.inboundTopic()).poll();
 
          assertNotNull("Resulted event must be published", received);
 
