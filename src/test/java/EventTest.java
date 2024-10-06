@@ -88,7 +88,7 @@ public class {{namePascalCase}}Test {
       try {
          String msg = objectMapper.writeValueAsString(event);
 
-         processor.inboundTopic().send(
+         processor.outboundTopic().send(
             MessageBuilder
             .withPayload(msg)
             .setHeader(
