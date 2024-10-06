@@ -80,9 +80,9 @@ public class {{namePascalCase}}Test {
    {{/when}}
    
    
-   {{#../aggregateList}}
+   {{#../boundedContext}}
    {{namePascalCase}}Application.applicationContext = applicationContext;
-   {{/../aggregateList}}
+   {{/../boundedContext}}
 
       ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       try {
