@@ -88,7 +88,7 @@ public class {{namePascalCase}}Test {
       try {
          String msg = objectMapper.writeValueAsString(event);
 
-         processor.outboundTopic().send(
+         processor.inboundTopic().send(
             MessageBuilder
             .withPayload(msg)
             .setHeader(
@@ -101,7 +101,7 @@ public class {{namePascalCase}}Test {
 
          //then:
 
-         Message<String> received = (Message<String>) messageCollector.forChannel(processor.inboundTopic()).poll();
+         Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
 
          assertNotNull("Resulted event must be published", received);
 
