@@ -146,7 +146,7 @@ public class {{namePascalCase}}Test {
    {{/../isRestRepository}}
 
    {{#../isExtendVerb}}
-   {{#then}}
+      {{#then}}
       {{../../namePascalCase}}Command command = new {{../../namePascalCase}}Command();
       {{/then}}
 
@@ -197,7 +197,6 @@ public class {{namePascalCase}}Test {
          assertEquals(result.get{{pascalCase @key}}(), {{{toJava this}}});
          {{/each}}
          {{/then}}
-         {{/reaching}}
 
       } catch (JsonProcessingException e) {
          e.printStackTrace();
