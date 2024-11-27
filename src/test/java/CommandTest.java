@@ -142,7 +142,7 @@ public class {{namePascalCase}}Test {
    {{/ifEquals}}
    {{/../isRestRepository}}
 
-   {{#../isExtendVerb}}
+   {{#../isExtendedVerb}}
       {{#then}}
       {{../../namePascalCase}}Command command = new {{../../namePascalCase}}Command();
       {{/then}}
@@ -154,7 +154,7 @@ public class {{namePascalCase}}Test {
       {{/when}}
       
       existingEntity.{{../nameCamelCase}}(command);
-   {{/../isExtendVerb}}
+   {{/../isExtendedVerb}}
            
 
          //then:
