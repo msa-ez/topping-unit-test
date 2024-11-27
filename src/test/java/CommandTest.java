@@ -158,7 +158,7 @@ public class {{namePascalCase}}Test {
            
 
          //then:
-         {{^ifEquals then.type "Aggregate"}}
+         {{^ifEquals then[0].type "Aggregate"}}
          this.messageVerifier.send(MessageBuilder
                 .withPayload(newEntity)
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
@@ -183,7 +183,7 @@ public class {{namePascalCase}}Test {
          {{/then}}
          {{/ifEquals}}
 
-         {{#ifEquals then.type "Aggregate"}}
+         {{#ifEquals then[0].type "Aggregate"}}
          {{pascalCase name}} result = repository.findById(existingEntity.get{{keyFieldDescriptor.namePascalCase}}()).get();
          {{/ifEquals}}
 
