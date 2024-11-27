@@ -158,7 +158,7 @@ public class {{namePascalCase}}Test {
            
 
          //then:
-         {{^reaching "Aggregate" ..}}
+         {{^ifEquals then.type "Aggregate"}}
          this.messageVerifier.send(MessageBuilder
                 .withPayload(newEntity)
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
@@ -181,11 +181,11 @@ public class {{namePascalCase}}Test {
          assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
          {{/each}}
          {{/then}}
-         {{/reaching}}
+         {{/ifEquals}}
 
-         {{#reaching "Aggregate" ..}}
+         {{#ifEquals then.type "Aggregate"}}
          {{pascalCase name}} result = repository.findById(existingEntity.get{{keyFieldDescriptor.namePascalCase}}()).get();
-         {{/reaching}}
+         {{/ifEquals}}
 
          LOGGER.info("Response received: {}", result);
 
