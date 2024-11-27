@@ -91,7 +91,7 @@ public class {{namePascalCase}}Test {
       
       try {
 
-
+   {{#../isRestRepository}}
    {{#ifEquals @root/restRepositoryInfo/method "POST"}}
       {{#reaching "Aggregate" ..}}
       {{pascalCase name}} newEntity = new {{pascalCase name}}();
@@ -104,9 +104,9 @@ public class {{namePascalCase}}Test {
       {{/when}}
 
       repository.save(newEntity);
+   {{/ifEquals}}
 
-
-   {{else}}{{#ifEquals @root/restRepositoryInfo/method "DELETE"}}
+   {{#ifEquals @root/restRepositoryInfo/method "DELETE"}}
       {{#reaching "Aggregate" ..}}
       {{pascalCase name}} theEntity = new {{pascalCase name}}();
       {{/reaching}}
@@ -118,8 +118,9 @@ public class {{namePascalCase}}Test {
       {{/when}}
 
       repository.delete(theEntity);
-   {{else}}
-
+   {{/ifEquals}}
+   
+   {{#ifEquals @root/restRepositoryInfo/method "PUT"}}
       {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
 
       {{#when}}
@@ -131,10 +132,36 @@ public class {{namePascalCase}}Test {
       existingEntity.{{camelCase ../name}}(command);
 
    {{/ifEquals}}
-   {{/ifEquals}}
+   {{#ifEquals @root/restRepositoryInfo/method "PATCH"}}
+      {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
 
+      {{#when}}
+      {{#each value}}
+         command.set{{pascalCase @key}}({{{toJava this}}});
+      {{/each}}
+      {{/when}}
+
+      existingEntity.{{camelCase ../name}}(command);
+   {{/ifEquals}}
+   {{/../isRestRepository}}
+
+   {{#../isExtendVerb}}
+   {{#then}}
+      {{../../namePascalCase}}Command command = new {{../../namePascalCase}}Command();
+      {{/then}}
+
+      {{#when}}
+      {{#each value}}
+         command.set{{pascalCase @key}}({{{toJava this}}});
+      {{/each}}
+      {{/when}}
+      
+      existingEntity.{{../nameCamelCase}}(command);
+   {{/../isExtendVerb}}
            
 
+         //then:
+         {{^reaching "Aggregate" ..}}
          this.messageVerifier.send(MessageBuilder
                 .withPayload(newEntity)
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
@@ -143,22 +170,34 @@ public class {{namePascalCase}}Test {
          Message<?> receivedMessage = this.messageVerifier.receive({{{toJava ../options.package}}}, 5000, TimeUnit.MILLISECONDS);
          assertNotNull("Resulted event must be published", receivedMessage);
 
-      //then:
-      {{#outgoing "Event" ..}}
+         {{#outgoing "Event" ..}}
          String receivedPayload = (String) receivedMessage.getPayload();
 
          {{pascalCase name}} outputEvent = objectMapper.readValue(receivedPayload, {{pascalCase name}}.class);
-      {{/outgoing}}
+         {{/outgoing}}
 
 
          LOGGER.info("Response received: {}", outputEvent);
 
-      {{#then}}
-      {{#each value}}
+         {{#then}}
+         {{#each value}}
          assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
-      {{/each}}
-      {{/then}}
+         {{/each}}
+         {{/then}}
+         {{/reaching}}
 
+         {{#reaching "Aggregate" ..}}
+         {{pascalCase name}} result = repository.findById(existingEntity.get{{keyFieldDescriptor.namePascalCase}}()).get();
+         {{/reaching}}
+
+         LOGGER.info("Response received: {}", result);
+
+         {{#then}}
+         {{#each value}}
+         assertEquals(result.get{{pascalCase @key}}(), {{{toJava this}}});
+         {{/each}}
+         {{/then}}
+         {{/reaching}}
 
       } catch (JsonProcessingException e) {
          e.printStackTrace();
