@@ -1,7 +1,7 @@
 forEach: Command
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
-except: {{#ifEquals namePascalCase "DistanceCalculation"}}{{/ifEquals}}
+except: {{#checkExamples examples}}{{/checkExamples}}
 ---
 
 package {{options.package}};
@@ -158,7 +158,6 @@ public class {{namePascalCase}}Test {
            
 
          //then:
-         {{^ifEquals then.[0].type "Aggregate"}}
          this.messageVerifier.send(MessageBuilder
                 .withPayload(newEntity)
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
@@ -181,11 +180,8 @@ public class {{namePascalCase}}Test {
          assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
          {{/each}}
          {{/then}}
-         {{/ifEquals}}
 
-         {{#ifEquals then.[0].type "Aggregate"}}
-         {{pascalCase name}} result = repository.findById(existingEntity.get{{keyFieldDescriptor.namePascalCase}}()).get();
-         {{/ifEquals}}
+         {{../namePascalCase}} result = repository.findById(existingEntity.get{{../aggregate.keyFieldDescriptor.namePascalCase}}()).get();
 
          LOGGER.info("Response received: {}", result);
 
