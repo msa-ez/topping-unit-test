@@ -267,70 +267,60 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
    if(!examples)return false;
 
    function hasNonNAValue(obj) {
+      // Vue Observer 객체를 일반 객체로 변환
+      obj = JSON.parse(JSON.stringify(obj));
+      
       // null이나 undefined 체크
       if (obj === null || obj === undefined) {
-         console.log("null or undefined found");
          return false;
       }
       
       // 문자열인 경우
       if (typeof obj === 'string') {
-         console.log("checking string:", obj);
          return obj !== "N/A";
       }
       
       // 숫자인 경우
       if (typeof obj === 'number') {
-         console.log("number found:", obj);
          return true;
       }
       
       // 배열 검사
       if (Array.isArray(obj)) {
-         console.log("checking array");
-         for (let item of obj) {
-            if (hasNonNAValue(item)) return true;
-         }
-         return false;
+         return obj.some(item => hasNonNAValue(item));
       }
       
       // 객체 검사
       if (typeof obj === 'object') {
-         console.log("checking object");
-         let hasNonNA = false;
-         for (let [key, value] of Object.entries(obj)) {
-            console.log(`checking key ${key}:`, value);
-            if (hasNonNAValue(value)) {
-               hasNonNA = true;
-               break;
-            }
-         }
-         return hasNonNA;
+         return Object.values(obj).some(value => hasNonNAValue(value));
       }
       
       return false;
    }
 
-   // examples의 각 항목 검사
+   // examples를 순수 객체로 변환
+   examples = JSON.parse(JSON.stringify(examples));
+   
    for(let example of examples) {
-      console.log("Checking example:", example);
-      
       // given 검사
       if (example.given?.[0]?.value) {
-         console.log("Checking given value");
-         if (hasNonNAValue(example.given[0].value)) return true;
+         if (hasNonNAValue(example.given[0].value)) {
+            return true;
+         }
       }
       
       // when 검사
       if (example.when?.[0]?.value) {
-         console.log("Checking when value");
-         if (hasNonNAValue(example.when[0].value)) return true;
+         if (hasNonNAValue(example.when[0].value)) {
+            return true;
+         }
       }
       
       // then 검사
       if (example.then?.[0]?.value) {
-         console.log("Checking then value");
-         if (hasNonNAValue(example.then[0].value)) return true;
+         if (hasNonNAValue(example.then[0].value)) {
+            return true;
+         }
       }
    }
    
