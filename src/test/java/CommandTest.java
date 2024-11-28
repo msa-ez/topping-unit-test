@@ -285,30 +285,30 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
          return Object.values(obj).some(value => hasNonNAValue(value));
       }
       
-      // 다른 타입의 값들(number, boolean 등)
-      return obj !== "N/A";
+      return false;
    }
 
    for(var i = 0; i < examples.length; i++){
       var example = examples[i];
       
-      // Check given values
+      // Check only value fields
       if (example.given && example.given[0].value) {
          if (hasNonNAValue(example.given[0].value)) {
+            console.log("Found non-NA in given:", example.given[0].value);
             return true;
          }
       }
 
-      // Check when values
       if (example.when && example.when[0].value) {
          if (hasNonNAValue(example.when[0].value)) {
+            console.log("Found non-NA in when:", example.when[0].value);
             return true;
          }
       }
 
-      // Check then values
       if (example.then && example.then[0].value) {
          if (hasNonNAValue(example.then[0].value)) {
+            console.log("Found non-NA in then:", example.then[0].value);
             return true;
          }
       }
