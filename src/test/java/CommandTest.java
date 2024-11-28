@@ -268,32 +268,44 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
 
    function hasNonNAValue(obj) {
       // null이나 undefined 체크
-      if (obj === null || obj === undefined) return false;
+      if (obj === null || obj === undefined) {
+         console.log("null or undefined found");
+         return false;
+      }
       
       // 문자열인 경우
       if (typeof obj === 'string') {
-         return obj !== "N/A";  // "N/A"가 아닌 문자열이면 true
+         console.log("checking string:", obj);
+         return obj !== "N/A";
       }
       
       // 숫자인 경우
       if (typeof obj === 'number') {
-         return true;  // 모든 숫자는 유효한 값으로 처리
+         console.log("number found:", obj);
+         return true;
       }
       
       // 배열 검사
       if (Array.isArray(obj)) {
-         return obj.some(item => hasNonNAValue(item));
+         console.log("checking array");
+         for (let item of obj) {
+            if (hasNonNAValue(item)) return true;
+         }
+         return false;
       }
       
       // 객체 검사
       if (typeof obj === 'object') {
-         // 객체의 모든 값을 검사
-         for (let value of Object.values(obj)) {
+         console.log("checking object");
+         let hasNonNA = false;
+         for (let [key, value] of Object.entries(obj)) {
+            console.log(`checking key ${key}:`, value);
             if (hasNonNAValue(value)) {
-               return true;
+               hasNonNA = true;
+               break;
             }
          }
-         return false;
+         return hasNonNA;
       }
       
       return false;
@@ -301,19 +313,24 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
 
    // examples의 각 항목 검사
    for(let example of examples) {
+      console.log("Checking example:", example);
+      
       // given 검사
-      if (example.given?.[0]?.value && hasNonNAValue(example.given[0].value)) {
-         return true;
+      if (example.given?.[0]?.value) {
+         console.log("Checking given value");
+         if (hasNonNAValue(example.given[0].value)) return true;
       }
       
       // when 검사
-      if (example.when?.[0]?.value && hasNonNAValue(example.when[0].value)) {
-         return true;
+      if (example.when?.[0]?.value) {
+         console.log("Checking when value");
+         if (hasNonNAValue(example.when[0].value)) return true;
       }
       
       // then 검사
-      if (example.then?.[0]?.value && hasNonNAValue(example.then[0].value)) {
-         return true;
+      if (example.then?.[0]?.value) {
+         console.log("Checking then value");
+         if (hasNonNAValue(example.then[0].value)) return true;
       }
    }
    
