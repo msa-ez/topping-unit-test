@@ -158,6 +158,7 @@ public class {{namePascalCase}}Test {
            
 
          //then:
+         {{^ifEquals then.[0].type "Aggregate"}}
          this.messageVerifier.send(MessageBuilder
                 .withPayload(newEntity)
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
@@ -174,14 +175,16 @@ public class {{namePascalCase}}Test {
 
 
          LOGGER.info("Response received: {}", outputEvent);
-
+         
          {{#then}}
          {{#each value}}
          assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
          {{/each}}
          {{/then}}
+         {{/ifEquals}}
 
-         {{../namePascalCase}} result = repository.findById(existingEntity.get{{../aggregate.keyFieldDescriptor.namePascalCase}}()).get();
+         {{#ifEquals then.[0].type "Aggregate"}}
+         {{../aggregate.namePascalCase}} result = repository.findById(existingEntity.get{{../aggregate.keyFieldDescriptor.namePascalCase}}()).get();
 
          LOGGER.info("Response received: {}", result);
 
@@ -190,7 +193,7 @@ public class {{namePascalCase}}Test {
          assertEquals(result.get{{pascalCase @key}}(), {{{toJava this}}});
          {{/each}}
          {{/then}}
-
+         {{/ifEquals}}
       } catch (JsonProcessingException e) {
          e.printStackTrace();
          assertTrue(e.getMessage(), false);
