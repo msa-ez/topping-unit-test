@@ -88,73 +88,73 @@ public class {{namePascalCase}}Test {
       //when:  
       try {
 
-   {{#../isRestRepository}}
-   {{#ifEquals @root/restRepositoryInfo/method "POST"}}
-      {{#reaching "Aggregate" ..}}
-      {{pascalCase name}} entity = new {{pascalCase name}}();
-      {{/reaching}}
+      {{#../isRestRepository}}
+      {{#ifEquals @root/restRepositoryInfo/method "POST"}}
+         {{#reaching "Aggregate" ..}}
+         {{pascalCase name}} entity = new {{pascalCase name}}();
+         {{/reaching}}
 
-      {{#when}}
-      {{#each value}}
+         {{#when}}
+         {{#each value}}
          entity.set{{pascalCase @key}}({{{toJava this}}});
-      {{/each}}
-      {{/when}}
+         {{/each}}
+         {{/when}}
 
-      repository.save(entity);
-   {{/ifEquals}}
+         repository.save(entity);
+      {{/ifEquals}}
 
-   {{#ifEquals @root/restRepositoryInfo/method "DELETE"}}
-      {{#reaching "Aggregate" ..}}
-      {{pascalCase name}} entity = new {{pascalCase name}}();
-      {{/reaching}}
+      {{#ifEquals @root/restRepositoryInfo/method "DELETE"}}
+         {{#reaching "Aggregate" ..}}
+         {{pascalCase name}} entity = new {{pascalCase name}}();
+         {{/reaching}}
 
-      {{#when}}
-      {{#each value}}
+         {{#when}}
+         {{#each value}}
          entity.set{{pascalCase @key}}({{{toJava this}}});
-      {{/each}}
-      {{/when}}
+         {{/each}}
+         {{/when}}
 
-      repository.delete(entity);
-   {{/ifEquals}}
-   
-   {{#ifEquals @root/restRepositoryInfo/method "PUT"}}
-      {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
-
-      {{#when}}
-      {{#each value}}
-         command.set{{pascalCase @key}}({{{toJava this}}});
-      {{/each}}
-      {{/when}}
-
-      entity.{{camelCase ../name}}(command);
-
-   {{/ifEquals}}
-   {{#ifEquals @root/restRepositoryInfo/method "PATCH"}}
-      {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
-
-      {{#when}}
-      {{#each value}}
-         command.set{{pascalCase @key}}({{{toJava this}}});
-      {{/each}}
-      {{/when}}
-
-      entity.{{camelCase ../name}}(command);
-   {{/ifEquals}}
-   {{/../isRestRepository}}
-
-   {{#../isExtendedVerb}}
-      {{#then}}
-      {{../../namePascalCase}}Command command = new {{../../namePascalCase}}Command();
-      {{/then}}
-
-      {{#when}}
-      {{#each value}}
-         command.set{{pascalCase @key}}({{{toJava this}}});
-      {{/each}}
-      {{/when}}
+         repository.delete(entity);
+      {{/ifEquals}}
       
-      entity.{{../nameCamelCase}}(command);
-   {{/../isExtendedVerb}}
+      {{#ifEquals @root/restRepositoryInfo/method "PUT"}}
+         {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
+
+         {{#when}}
+         {{#each value}}
+         command.set{{pascalCase @key}}({{{toJava this}}});
+         {{/each}}
+         {{/when}}
+
+         entity.{{camelCase ../name}}(command);
+
+      {{/ifEquals}}
+      {{#ifEquals @root/restRepositoryInfo/method "PATCH"}}
+         {{pascalCase ../name}} command = new {{pascalCase ../name}}Command();
+
+         {{#when}}
+         {{#each value}}
+            command.set{{pascalCase @key}}({{{toJava this}}});
+         {{/each}}
+         {{/when}}
+
+         entity.{{camelCase ../name}}(command);
+      {{/ifEquals}}
+      {{/../isRestRepository}}
+
+      {{#../isExtendedVerb}}
+         {{#then}}
+         {{../../namePascalCase}}Command command = new {{../../namePascalCase}}Command();
+         {{/then}}
+
+         {{#when}}
+         {{#each value}}
+         command.set{{pascalCase @key}}({{{toJava this}}});
+         {{/each}}
+         {{/when}}
+         
+         entity.{{../nameCamelCase}}(command);
+      {{/../isExtendedVerb}}
            
 
          //then:
@@ -230,10 +230,21 @@ function convertToJavaSyntax(value) {
       } else if (value === null) {
         return 'null';
       } else if (Array.isArray(value)) {
-        // 배열의 경우 더 복잡한 로직이 필요할 수 있으며, 이는 예시로만 제공됩니다.
-        const elements = value.map((element) => convertToJavaSyntax(element)).join(', ');
-        return `new Object[]{${elements}}`; // Object 배열로 간주합니다.
-      } else {
+         if (value.length === 0) return "new Object[0]";
+         
+         const elements = value.map(element => {
+           if (typeof element === 'object' && element !== null) {
+             // Convert object to Java Map syntax
+             const entries = Object.entries(element)
+               .map(([k, v]) => `"${k}", ${convertToJavaSyntax(v)}`)
+               .join(", ");
+             return `new java.util.HashMap<String, Object>(){{put(${entries});}}`; 
+           }
+           return convertToJavaSyntax(element);
+         }).join(", ");
+         
+         return `new Object[]{${elements}}`;
+       } else {
         // 다른 종류의 객체에 대한 처리가 필요할 수 있습니다.
         // 이 경우 해당 객체를 적절한 Java 표현으로 변환하는 로직이 필요합니다.
         return value.toString(); // 기본적인 toString 반환을 사용합니다.
