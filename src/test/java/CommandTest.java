@@ -265,37 +265,47 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
    if(!examples)return false;
-   
+
+      function hasNonNAValue(obj) {
+      if (obj === null || obj === undefined) return false;
+      
+      // 기본값 검사
+      if (obj === "N/A") return false;
+      
+      // 배열 검사
+      if (Array.isArray(obj)) {
+         return obj.some(item => hasNonNAValue(item));
+      }
+      
+      // 객체 검사
+      if (typeof obj === 'object') {
+         return Object.values(obj).some(value => hasNonNAValue(value));
+      }
+      
+      // 그 외의 경우는 "N/A"가 아닌 값이 있는 것
+      return true;
+   }
+
    for(var i = 0; i < examples.length; i++){
       var example = examples[i];
       
       // Check given values
       if (example.given && example.given[0].value) {
-         const values = Object.values(example.given[0].value);
-         for (const val of values) {
-            if (Array.isArray(val)) {
-               // 배열인 경우 (예: period) 내부 객체의 값들 확인
-               for (const item of val) {
-                  if (Object.values(item).some(v => v !== "N/A")) {
-                     return true;
-                  }
-               }
-            } else if (val !== "N/A") {
-               return true;
-            }
+         if (hasNonNAValue(example.given[0].value)) {
+            return true;
          }
       }
 
       // Check when values
       if (example.when && example.when[0].value) {
-         if (Object.values(example.when[0].value).some(val => val !== "N/A")) {
+         if (hasNonNAValue(example.when[0].value)) {
             return true;
          }
       }
 
       // Check then values
       if (example.then && example.then[0].value) {
-         if (Object.values(example.then[0].value).some(val => val !== "N/A")) {
+         if (hasNonNAValue(example.then[0].value)) {
             return true;
          }
       }
