@@ -74,16 +74,16 @@ public class {{namePascalCase}}Test {
 
       //given:  
    {{#reaching "Aggregate" ..}}
-      {{pascalCase name}} existingEntity = new {{pascalCase name}}();
+      {{pascalCase name}} entity = new {{pascalCase name}}();
    {{/reaching}}
 
    {{#given}}
    {{#each value}}
-      existingEntity.set{{pascalCase @key}}({{{toJava this}}});
+      entity.set{{pascalCase @key}}({{{toJava this}}});
    {{/each}}
    {{/given}}
 
-      repository.save(existingEntity);
+      repository.save(entity);
 
       //when:  
       try {
@@ -91,30 +91,30 @@ public class {{namePascalCase}}Test {
    {{#../isRestRepository}}
    {{#ifEquals @root/restRepositoryInfo/method "POST"}}
       {{#reaching "Aggregate" ..}}
-      {{pascalCase name}} newEntity = new {{pascalCase name}}();
+      {{pascalCase name}} entity = new {{pascalCase name}}();
       {{/reaching}}
 
       {{#when}}
       {{#each value}}
-         newEntity.set{{pascalCase @key}}({{{toJava this}}});
+         entity.set{{pascalCase @key}}({{{toJava this}}});
       {{/each}}
       {{/when}}
 
-      repository.save(newEntity);
+      repository.save(entity);
    {{/ifEquals}}
 
    {{#ifEquals @root/restRepositoryInfo/method "DELETE"}}
       {{#reaching "Aggregate" ..}}
-      {{pascalCase name}} theEntity = new {{pascalCase name}}();
+      {{pascalCase name}} entity = new {{pascalCase name}}();
       {{/reaching}}
 
       {{#when}}
       {{#each value}}
-         newEntity.set{{pascalCase @key}}({{{toJava this}}});
+         entity.set{{pascalCase @key}}({{{toJava this}}});
       {{/each}}
       {{/when}}
 
-      repository.delete(theEntity);
+      repository.delete(entity);
    {{/ifEquals}}
    
    {{#ifEquals @root/restRepositoryInfo/method "PUT"}}
@@ -126,7 +126,7 @@ public class {{namePascalCase}}Test {
       {{/each}}
       {{/when}}
 
-      existingEntity.{{camelCase ../name}}(command);
+      entity.{{camelCase ../name}}(command);
 
    {{/ifEquals}}
    {{#ifEquals @root/restRepositoryInfo/method "PATCH"}}
@@ -138,7 +138,7 @@ public class {{namePascalCase}}Test {
       {{/each}}
       {{/when}}
 
-      existingEntity.{{camelCase ../name}}(command);
+      entity.{{camelCase ../name}}(command);
    {{/ifEquals}}
    {{/../isRestRepository}}
 
@@ -153,14 +153,14 @@ public class {{namePascalCase}}Test {
       {{/each}}
       {{/when}}
       
-      existingEntity.{{../nameCamelCase}}(command);
+      entity.{{../nameCamelCase}}(command);
    {{/../isExtendedVerb}}
            
 
          //then:
          {{^ifEquals then.[0].type "Aggregate"}}
          this.messageVerifier.send(MessageBuilder
-                .withPayload(newEntity)
+                .withPayload(entity)
                 .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
                 .build(), "{{../options.package}}");
 
@@ -184,7 +184,7 @@ public class {{namePascalCase}}Test {
          {{/ifEquals}}
 
          {{#ifEquals then.[0].type "Aggregate"}}
-         {{../aggregate.namePascalCase}} result = repository.findById(existingEntity.get{{../aggregate.keyFieldDescriptor.namePascalCase}}()).get();
+         {{../aggregate.namePascalCase}} result = repository.findById(entity.get{{../aggregate.keyFieldDescriptor.namePascalCase}}()).get();
 
          LOGGER.info("Response received: {}", result);
 
