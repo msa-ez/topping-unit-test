@@ -267,16 +267,25 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
    if(!examples)return false;
 
    function hasNonNAValue(obj) {
+      // null이나 undefined 체크
       if (obj === null || obj === undefined) return false;
       
+      // 문자열인 경우
       if (typeof obj === 'string') {
-         return obj !== "N/A";
+         return obj !== "N/A";  // "N/A"가 아닌 문자열이면 true
       }
       
+      // 숫자인 경우
+      if (typeof obj === 'number') {
+         return true;  // 모든 숫자는 유효한 값으로 처리
+      }
+      
+      // 배열 검사
       if (Array.isArray(obj)) {
          return obj.some(item => hasNonNAValue(item));
       }
       
+      // 객체 검사
       if (typeof obj === 'object') {
          return Object.values(obj).some(value => hasNonNAValue(value));
       }
@@ -284,21 +293,24 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       return false;
    }
 
-   for (var i = 0; i < examples.length; i++) {
+   for(var i = 0; i < examples.length; i++){
       var example = examples[i];
       
+      // Check given values
       if (example.given && example.given[0].value) {
          if (hasNonNAValue(example.given[0].value)) {
             return true;
          }
       }
 
+      // Check when values
       if (example.when && example.when[0].value) {
          if (hasNonNAValue(example.when[0].value)) {
             return true;
          }
       }
 
+      // Check then values
       if (example.then && example.then[0].value) {
          if (hasNonNAValue(example.then[0].value)) {
             return true;
