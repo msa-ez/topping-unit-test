@@ -264,6 +264,8 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 });
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
+   if(!examples)return false;
+
    function hasNonNAValue(obj) {
       // null이나 undefined 체크
       if (obj === null || obj === undefined) return false;
