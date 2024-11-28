@@ -100,24 +100,36 @@ public class {{namePascalCase}}Test {
          );
 
          //then:
-
+         {{^ifEquals then.[0].type "Aggregate"}}
          Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
 
          assertNotNull("Resulted event must be published", received);
 
-      {{#outgoing "Event" ..}}
+         {{#outgoing "Event" ..}}
          {{pascalCase name}} outputEvent = objectMapper.readValue((String)received.getPayload(), {{pascalCase name}}.class);
-      {{/outgoing}}
+         {{/outgoing}}
 
 
          LOGGER.info("Response received: {}", received.getPayload());
 
-      {{#then}}
-      {{#each value}}
+         {{#then}}
+         {{#each value}}
          assertEquals(String.valueOf(outputEvent.get{{pascalCase @key}}()), {{{toJava this}}});
-      {{/each}}
-      {{/then}}
+         {{/each}}
+         {{/then}}
+         {{/ifEquals}}
 
+         {{#ifEquals then.[0].type "Aggregate"}}
+         {{../aggregate.namePascalCase}} result = repository.findById(entity.get{{../aggregate.keyFieldDescriptor.namePascalCase}}()).get();
+
+         LOGGER.info("Response received: {}", result);
+
+         {{#then}}
+         {{#each value}}
+         assertEquals(result.get{{pascalCase @key}}(), {{{toJava this}}});
+         {{/each}}
+         {{/then}}
+         {{/ifEquals}}
 
       } catch (JsonProcessingException e) {
          // TODO Auto-generated catch block
