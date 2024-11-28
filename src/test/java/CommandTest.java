@@ -264,7 +264,26 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 });
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
-   if(!examples)return true
+   var flag = false;
+   for(var i = 0; i < examples.length; i++){
+      examples[i].forEach(example => {
+         // Check given values
+         if (example.given && example.given[0].value) {
+            flag = flag || Object.values(example.given[0].value).some(val => 
+               val !== "N/A" && (!Array.isArray(val) || val.some(item => Object.values(item).some(v => v !== "N/A")))
+            );
+         }
+         // Check when values
+         if (example.when && example.when[0].value) {
+            flag = flag || Object.values(example.when[0].value).some(val => val !== "N/A");
+         }
+         // Check then values
+         if (example.then && example.then[0].value) {
+            flag = flag || Object.values(example.then[0].value).some(val => val !== "N/A");
+         }
+      });
+   }
+   return flag;
 });
 
 </function>
