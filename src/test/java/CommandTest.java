@@ -264,6 +264,8 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 });
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
+   if(!examples)return false;
+   
    for(var i = 0; i < examples.length; i++){
       var example = examples[i];
       
