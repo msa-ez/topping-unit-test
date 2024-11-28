@@ -120,7 +120,7 @@ public class {{namePascalCase}}Test {
          {{/ifEquals}}
 
          {{#ifEquals then.[0].type "Aggregate"}}
-         {{../aggregate.namePascalCase}} result = repository.findById(entity.get{{../aggregate.keyFieldDescriptor.namePascalCase}}()).get();
+         {{../aggregateList.[0].namePascalCase}} result = repository.findById(entity.get{{../aggregateList.[0].keyFieldDescriptor.namePascalCase}}()).get();
 
          LOGGER.info("Response received: {}", result);
 
