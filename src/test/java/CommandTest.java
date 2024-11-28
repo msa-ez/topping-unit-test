@@ -264,26 +264,41 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 });
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
-   var flag = false;
    for(var i = 0; i < examples.length; i++){
-      var example = examples[i];  // examples[i] is the object directly
+      var example = examples[i];
       
       // Check given values
       if (example.given && example.given[0].value) {
-         flag = flag || Object.values(example.given[0].value).some(val => 
-            val !== "N/A" && (!Array.isArray(val) || val.some(item => Object.values(item).some(v => v !== "N/A")))
-         );
+         const values = Object.values(example.given[0].value);
+         for (const val of values) {
+            if (Array.isArray(val)) {
+               // 배열인 경우 (예: period) 내부 객체의 값들 확인
+               for (const item of val) {
+                  if (Object.values(item).some(v => v !== "N/A")) {
+                     return true;
+                  }
+               }
+            } else if (val !== "N/A") {
+               return true;
+            }
+         }
       }
+
       // Check when values
       if (example.when && example.when[0].value) {
-         flag = flag || Object.values(example.when[0].value).some(val => val !== "N/A");
+         if (Object.values(example.when[0].value).some(val => val !== "N/A")) {
+            return true;
+         }
       }
+
       // Check then values
       if (example.then && example.then[0].value) {
-         flag = flag || Object.values(example.then[0].value).some(val => val !== "N/A");
+         if (Object.values(example.then[0].value).some(val => val !== "N/A")) {
+            return true;
+         }
       }
    }
-   return flag;
+   return false;
 });
 
 </function>
