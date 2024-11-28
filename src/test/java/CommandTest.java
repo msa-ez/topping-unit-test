@@ -287,36 +287,36 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       
       // 객체 검사
       if (typeof obj === 'object') {
-         return Object.values(obj).some(value => hasNonNAValue(value));
+         // 객체의 모든 값을 검사
+         for (let value of Object.values(obj)) {
+            if (hasNonNAValue(value)) {
+               return true;
+            }
+         }
+         return false;
       }
       
       return false;
    }
 
-   for(var i = 0; i < examples.length; i++){
-      var example = examples[i];
+   // examples의 각 항목 검사
+   for(let example of examples) {
+      // given 검사
+      if (example.given?.[0]?.value && hasNonNAValue(example.given[0].value)) {
+         return true;
+      }
       
-      // Check given values
-      if (example.given && example.given[0].value) {
-         if (hasNonNAValue(example.given[0].value)) {
-            return true;
-         }
+      // when 검사
+      if (example.when?.[0]?.value && hasNonNAValue(example.when[0].value)) {
+         return true;
       }
-
-      // Check when values
-      if (example.when && example.when[0].value) {
-         if (hasNonNAValue(example.when[0].value)) {
-            return true;
-         }
-      }
-
-      // Check then values
-      if (example.then && example.then[0].value) {
-         if (hasNonNAValue(example.then[0].value)) {
-            return true;
-         }
+      
+      // then 검사
+      if (example.then?.[0]?.value && hasNonNAValue(example.then[0].value)) {
+         return true;
       }
    }
+   
    return false;
 });
 
