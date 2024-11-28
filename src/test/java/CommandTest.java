@@ -264,13 +264,14 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 });
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
-   if(!examples)return false;
-
-      function hasNonNAValue(obj) {
+   function hasNonNAValue(obj) {
+      // null이나 undefined 체크
       if (obj === null || obj === undefined) return false;
       
-      // 기본값 검사
-      if (obj === "N/A") return false;
+      // 문자열인 경우
+      if (typeof obj === 'string') {
+         return obj !== "N/A";
+      }
       
       // 배열 검사
       if (Array.isArray(obj)) {
@@ -282,8 +283,8 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
          return Object.values(obj).some(value => hasNonNAValue(value));
       }
       
-      // 그 외의 경우는 "N/A"가 아닌 값이 있는 것
-      return true;
+      // 다른 타입의 값들(number, boolean 등)
+      return obj !== "N/A";
    }
 
    for(var i = 0; i < examples.length; i++){
