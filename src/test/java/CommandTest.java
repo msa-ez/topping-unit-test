@@ -267,20 +267,16 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
    if(!examples)return false;
 
    function hasNonNAValue(obj) {
-      // null이나 undefined 체크
       if (obj === null || obj === undefined) return false;
       
-      // 문자열인 경우
       if (typeof obj === 'string') {
          return obj !== "N/A";
       }
       
-      // 배열 검사
       if (Array.isArray(obj)) {
          return obj.some(item => hasNonNAValue(item));
       }
       
-      // 객체 검사
       if (typeof obj === 'object') {
          return Object.values(obj).some(value => hasNonNAValue(value));
       }
@@ -288,27 +284,23 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       return false;
    }
 
-   for(var i = 0; i < examples.length; i++){
+   for (var i = 0; i < examples.length; i++) {
       var example = examples[i];
       
-      // Check only value fields
       if (example.given && example.given[0].value) {
          if (hasNonNAValue(example.given[0].value)) {
-            console.log("Found non-NA in given:", example.given[0].value);
             return true;
          }
       }
 
       if (example.when && example.when[0].value) {
          if (hasNonNAValue(example.when[0].value)) {
-            console.log("Found non-NA in when:", example.when[0].value);
             return true;
          }
       }
 
       if (example.then && example.then[0].value) {
          if (hasNonNAValue(example.then[0].value)) {
-            console.log("Found non-NA in then:", example.then[0].value);
             return true;
          }
       }
