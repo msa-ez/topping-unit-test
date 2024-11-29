@@ -1,7 +1,7 @@
 forEach: Command
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
-except: {{^checkExamples examples}}{{/checkExamples}}
+except: {{#checkExamples examples}}{{/checkExamples}}
 ---
 
 package {{options.package}};
@@ -275,22 +275,27 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       
       // 문자열인 경우
       if (typeof obj === 'string') {
-         return obj !== "N/A";  // N/A가 아닌 경우 true 반환
+         return obj !== "N/A";
       }
       
       // 숫자인 경우
       if (typeof obj === 'number') {
-         return true;  // 숫자가 있으면 유효한 데이터
+         return true;
       }
       
       // 배열 검사
       if (Array.isArray(obj)) {
-         return obj.some(item => hasNonNAValue(item));  // 하나라도 N/A가 아닌 값이 있으면 true
+         return obj.some(item => hasNonNAValue(item));
       }
       
       // 객체 검사
       if (typeof obj === 'object') {
-         return Object.values(obj).some(value => hasNonNAValue(value));  // 하나라도 N/A가 아닌 값이 있으면 true
+         // 객체의 모든 값을 검사
+         const values = Object.values(obj);
+         // 하나라도 N/A가 아닌 값이 있으면 true
+         const result = values.some(value => hasNonNAValue(value));
+         console.log('Object values:', values, 'Result:', result);
+         return result;
       }
       
       return false;
@@ -299,24 +304,23 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
    // examples를 순수 객체로 변환
    examples = JSON.parse(JSON.stringify(examples));
    
+   let result = false;
+   
    for (let example of examples) {
-      let hasValidValue = false;
-      
       for (let key of ['given', 'when', 'then']) {
          if (example[key]?.[0]?.value) {
-            if (hasNonNAValue(example[key][0].value)) {
-               hasValidValue = true;
+            const valueCheck = hasNonNAValue(example[key][0].value);
+            console.log(`Checking ${key}:`, example[key][0].value, 'Result:', valueCheck);
+            if (valueCheck) {
+               result = true;
                break;
             }
          }
       }
-      
-      if (hasValidValue) {
-         return true;  // N/A가 아닌 값이 하나라도 있으면 true
-      }
    }
    
-   return false;  // 모든 값이 N/A인 경우 false
+   console.log('Final result:', result);
+   return result;
 });
 
 </function>
