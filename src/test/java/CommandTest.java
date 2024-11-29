@@ -275,36 +275,37 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       
       // 문자열인 경우
       if (typeof obj === 'string') {
-         return obj !== "N/A";
+         // 여기를 반대로 변경
+         return obj === "N/A";
       }
       
       // 숫자인 경우
       if (typeof obj === 'number') {
-         return true;
+         return false;  // 숫자가 있으면 유효한 데이터이므로 false 반환
       }
       
       // 배열 검사
       if (Array.isArray(obj)) {
-         return obj.some(item => hasNonNAValue(item));
+         return obj.every(item => hasNonNAValue(item));  // some을 every로 변경
       }
       
       // 객체 검사
       if (typeof obj === 'object') {
-         return Object.values(obj).some(value => hasNonNAValue(value));
+         return Object.values(obj).every(value => hasNonNAValue(value));  // some을 every로 변경
       }
       
-      return false;
+      return true;
    }
 
    // examples를 순수 객체로 변환
    examples = JSON.parse(JSON.stringify(examples));
    
    for (let example of examples) {
-      // given, when, then 검사
       for (let key of ['given', 'when', 'then']) {
          if (example[key]?.[0]?.value) {
-            if (hasNonNAValue(example[key][0].value)) {
-               return true;
+            // 여기를 반대로 변경
+            if (!hasNonNAValue(example[key][0].value)) {
+               return true;  // N/A가 아닌 값이 하나라도 있으면 true
             }
          }
       }
