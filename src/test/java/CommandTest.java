@@ -298,25 +298,13 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
    // examples를 순수 객체로 변환
    examples = JSON.parse(JSON.stringify(examples));
    
-   for(let example of examples) {
-      // given 검사
-      if (example.given?.[0]?.value) {
-         if (hasNonNAValue(example.given[0].value)) {
-            return true;
-         }
-      }
-      
-      // when 검사
-      if (example.when?.[0]?.value) {
-         if (hasNonNAValue(example.when[0].value)) {
-            return true;
-         }
-      }
-      
-      // then 검사
-      if (example.then?.[0]?.value) {
-         if (hasNonNAValue(example.then[0].value)) {
-            return true;
+   for (let example of examples) {
+      // given, when, then 검사
+      for (let key of ['given', 'when', 'then']) {
+         if (example[key]?.[0]?.value) {
+            if (hasNonNAValue(example[key][0].value)) {
+               return true;
+            }
          }
       }
    }
