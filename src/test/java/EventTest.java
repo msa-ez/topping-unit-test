@@ -25,10 +25,15 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.MimeTypeUtils;
 
+import org.springframework.cloud.contract.verifier.messaging.MessageVerifier;
+import org.springframework.cloud.contract.verifier.messaging.boot.AutoConfigureMessageVerifier;
+import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessage;
+import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessaging;
+import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierObjectMapper;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import {{options.package}}.config.kafka.KafkaProcessor;
 import {{options.package}}.domain.*;
 
 @RunWith(SpringRunner.class)
@@ -38,11 +43,12 @@ public class {{namePascalCase}}Test {
    private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}Test.class);
    
    @Autowired
-   private KafkaProcessor processor;
-   @Autowired
    private MessageCollector messageCollector;
    @Autowired
    private ApplicationContext applicationContext;
+
+   @Autowired
+   private MessageVerifier<Message<?>> messageVerifier;
 
    {{#aggregateList}}
    @Autowired
@@ -86,35 +92,28 @@ public class {{namePascalCase}}Test {
 
       ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       try {
-         String msg = objectMapper.writeValueAsString(event);
-
-         processor.inboundTopic().send(
-            MessageBuilder
-            .withPayload(msg)
-            .setHeader(
-               MessageHeaders.CONTENT_TYPE,
-               MimeTypeUtils.APPLICATION_JSON
-            )
-            .setHeader("type", event.getEventType())
-            .build()
-         );
+         this.messageVerifier.send(MessageBuilder
+                .withPayload(event)
+                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+                .setHeader("type", event.getEventType())
+                .build(), "{{../options.package}}");
 
          //then:
          {{^ifEquals then.[0].type "Aggregate"}}
-         Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
-
-         assertNotNull("Resulted event must be published", received);
+         Message<?> receivedMessage = this.messageVerifier.receive("{{../options.package}}", 5000, TimeUnit.MILLISECONDS);
+         assertNotNull("Resulted event must be published", receivedMessage);
 
          {{#outgoing "Event" ..}}
-         {{pascalCase name}} outputEvent = objectMapper.readValue((String)received.getPayload(), {{pascalCase name}}.class);
+         String receivedPayload = (String) receivedMessage.getPayload();
+         {{pascalCase name}} outputEvent = objectMapper.readValue(receivedPayload, {{pascalCase name}}.class);
          {{/outgoing}}
 
 
-         LOGGER.info("Response received: {}", received.getPayload());
+         LOGGER.info("Response received: {}", outputEvent);
 
          {{#then}}
          {{#each value}}
-         assertEquals(String.valueOf(outputEvent.get{{pascalCase @key}}()), {{{toJava this}}});
+         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
          {{/each}}
          {{/then}}
          {{/ifEquals}}

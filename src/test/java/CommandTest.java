@@ -38,7 +38,6 @@ import org.springframework.cloud.contract.verifier.messaging.internal.ContractVe
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import {{options.package}}.config.kafka.KafkaProcessor;
 import {{options.package}}.domain.*;
 
 @RunWith(SpringRunner.class)
@@ -49,9 +48,8 @@ public class {{namePascalCase}}Test {
    private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}Test.class);
    
    @Autowired
-   private KafkaProcessor processor;
-   @Autowired
    private MessageCollector messageCollector;
+   
    @Autowired
    private ApplicationContext applicationContext;
 
