@@ -275,43 +275,48 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       
       // 문자열인 경우
       if (typeof obj === 'string') {
-         // 여기를 반대로 변경
-         return obj === "N/A";
+         return obj !== "N/A";  // N/A가 아닌 경우 true 반환
       }
       
       // 숫자인 경우
       if (typeof obj === 'number') {
-         return false;  // 숫자가 있으면 유효한 데이터이므로 false 반환
+         return true;  // 숫자가 있으면 유효한 데이터
       }
       
       // 배열 검사
       if (Array.isArray(obj)) {
-         return obj.every(item => hasNonNAValue(item));  // some을 every로 변경
+         return obj.some(item => hasNonNAValue(item));  // 하나라도 N/A가 아닌 값이 있으면 true
       }
       
       // 객체 검사
       if (typeof obj === 'object') {
-         return Object.values(obj).every(value => hasNonNAValue(value));  // some을 every로 변경
+         return Object.values(obj).some(value => hasNonNAValue(value));  // 하나라도 N/A가 아닌 값이 있으면 true
       }
       
-      return true;
+      return false;
    }
 
    // examples를 순수 객체로 변환
    examples = JSON.parse(JSON.stringify(examples));
    
    for (let example of examples) {
+      let hasValidValue = false;
+      
       for (let key of ['given', 'when', 'then']) {
          if (example[key]?.[0]?.value) {
-            // 여기를 반대로 변경
-            if (!hasNonNAValue(example[key][0].value)) {
-               return true;  // N/A가 아닌 값이 하나라도 있으면 true
+            if (hasNonNAValue(example[key][0].value)) {
+               hasValidValue = true;
+               break;
             }
          }
       }
+      
+      if (hasValidValue) {
+         return true;  // N/A가 아닌 값이 하나라도 있으면 true
+      }
    }
    
-   return false;
+   return false;  // 모든 값이 N/A인 경우 false
 });
 
 </function>
