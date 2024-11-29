@@ -1,7 +1,7 @@
 forEach: Command
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
-except: {{#if checkExamples examples}}{{/if}}
+except: {{#if checkExamples examples}}true{{else}}false{{/if}}
 ---
 
 package {{options.package}};
