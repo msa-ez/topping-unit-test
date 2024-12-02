@@ -1,6 +1,7 @@
 forEach: Policy
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
+except: {{#checkExamples examples}}{{/checkExamples}}
 ---
 
 package {{options.package}};
@@ -179,3 +180,63 @@ function convertToJavaSyntax(value) {
       throw new Error(`Unsupported type: ${type}`);
   }
 }
+
+window.$HandleBars.registerHelper('checkExamples', function (examples) {
+  if (!examples) return false;
+
+  function isAllNA(obj) {
+     // Vue Observer 객체를 일반 객체로 변환
+     obj = JSON.parse(JSON.stringify(obj));
+     
+     // null이나 undefined 체크
+     if (obj === null || obj === undefined) {
+        return true;
+     }
+     
+     // 문자열인 경우
+     if (typeof obj === 'string') {
+        return obj === "N/A";  // N/A인 경우 true
+     }
+     
+     // 숫자인 경우
+     if (typeof obj === 'number') {
+        return false;  // 숫자가 있으면 N/A가 아님
+     }
+     
+     // 배열 검사
+     if (Array.isArray(obj)) {
+        return obj.every(item => isAllNA(item));  // 모든 요소가 N/A여야 true
+     }
+     
+     // 객체 검사
+     if (typeof obj === 'object') {
+        return Object.values(obj).every(value => isAllNA(value));  // 모든 값이 N/A여야 true
+     }
+     
+     return false;
+  }
+
+  // examples를 순수 객체로 변환
+  examples = JSON.parse(JSON.stringify(examples));
+  
+  for (let example of examples) {
+     let allNA = true;
+     
+     for (let key of ['given', 'when', 'then']) {
+        if (example[key]?.[0]?.value) {
+           if (!isAllNA(example[key][0].value)) {
+              allNA = false;
+              break;
+           }
+        }
+     }
+     
+     if (!allNA) {
+        return false;  // 하나라도 N/A가 아닌 값이 있으면 false
+     }
+  }
+  
+  return true;  // 모든 값이 N/A인 경우 true
+});
+
+</function>
