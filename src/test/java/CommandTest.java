@@ -262,9 +262,9 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 });
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
-   if(!examples)return true;
+   if (!examples) return false;
 
-   function hasNonNAValue(obj) {
+   function isAllNA(obj) {
       // Vue Observer 객체를 일반 객체로 변환
       obj = JSON.parse(JSON.stringify(obj));
       
@@ -275,49 +275,48 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       
       // 문자열인 경우
       if (typeof obj === 'string') {
-         return obj !== "N/A";
+         return obj === "N/A";  // N/A인 경우 true
       }
       
       // 숫자인 경우
       if (typeof obj === 'number') {
-         return false;
+         return false;  // 숫자가 있으면 N/A가 아님
       }
       
       // 배열 검사
       if (Array.isArray(obj)) {
-         return obj.some(item => hasNonNAValue(item));
+         return obj.every(item => isAllNA(item));  // 모든 요소가 N/A여야 true
       }
       
       // 객체 검사
       if (typeof obj === 'object') {
-         // 객체의 모든 값을 검사
-         const values = Object.values(obj);
-         // 하나라도 N/A가 아닌 값이 있으면 true
-         const result = values.some(value => hasNonNAValue(value));
-         return false;
+         return Object.values(obj).every(value => isAllNA(value));  // 모든 값이 N/A여야 true
       }
       
-      return true;
+      return false;
    }
 
    // examples를 순수 객체로 변환
    examples = JSON.parse(JSON.stringify(examples));
    
-   let result = true;
-   
    for (let example of examples) {
+      let allNA = true;
+      
       for (let key of ['given', 'when', 'then']) {
          if (example[key]?.[0]?.value) {
-            const valueCheck = hasNonNAValue(example[key][0].value);
-            if (valueCheck) {
-               result = false;
+            if (!isAllNA(example[key][0].value)) {
+               allNA = false;
                break;
             }
          }
       }
+      
+      if (!allNA) {
+         return false;  // 하나라도 N/A가 아닌 값이 있으면 false
+      }
    }
    
-   return result;
+   return true;  // 모든 값이 N/A인 경우 true
 });
 
 </function>
