@@ -262,7 +262,7 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 });
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
-   if (!examples) return false;
+   if (!examples) return true;
 
    function isAllNA(obj) {
       // Vue Observer 객체를 일반 객체로 변환
