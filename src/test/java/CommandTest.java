@@ -1,7 +1,7 @@
 forEach: Command
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
-except: {{#if checkExamples examples}}true{{else}}false{{/if}}
+except: {{#checkExamples examples}}{{/checkExamples}}
 ---
 
 package {{options.package}};
@@ -262,7 +262,7 @@ window.$HandleBars.registerHelper('checkIncomingType', function (incomingRelatio
 });
 
 window.$HandleBars.registerHelper('checkExamples', function (examples) {
-   if(!examples)return false;
+   if(!examples)return true;
 
    function hasNonNAValue(obj) {
       // Vue Observer 객체를 일반 객체로 변환
@@ -270,7 +270,7 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       
       // null이나 undefined 체크
       if (obj === null || obj === undefined) {
-         return false;
+         return true;
       }
       
       // 문자열인 경우
@@ -280,7 +280,7 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
       
       // 숫자인 경우
       if (typeof obj === 'number') {
-         return true;
+         return false;
       }
       
       // 배열 검사
@@ -294,32 +294,29 @@ window.$HandleBars.registerHelper('checkExamples', function (examples) {
          const values = Object.values(obj);
          // 하나라도 N/A가 아닌 값이 있으면 true
          const result = values.some(value => hasNonNAValue(value));
-         console.log('Object values:', values, 'Result:', result);
-         return result;
+         return false;
       }
       
-      return false;
+      return true;
    }
 
    // examples를 순수 객체로 변환
    examples = JSON.parse(JSON.stringify(examples));
    
-   let result = false;
+   let result = true;
    
    for (let example of examples) {
       for (let key of ['given', 'when', 'then']) {
          if (example[key]?.[0]?.value) {
             const valueCheck = hasNonNAValue(example[key][0].value);
-            console.log(`Checking ${key}:`, example[key][0].value, 'Result:', valueCheck);
             if (valueCheck) {
-               result = true;
+               result = false;
                break;
             }
          }
       }
    }
    
-   console.log('Final result:', result);
    return result;
 });
 
