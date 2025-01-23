@@ -1,7 +1,6 @@
 forEach: Policy
 fileName: {{namePascalCase}}Test.java
 path: {{boundedContext.name}}/src/test/java/{{options.package}}
-except: {{#checkExamples examples}}{{/checkExamples}}
 ---
 
 package {{options.package}};
@@ -26,15 +25,10 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.MimeTypeUtils;
 
-import org.springframework.cloud.contract.verifier.messaging.MessageVerifier;
-import org.springframework.cloud.contract.verifier.messaging.boot.AutoConfigureMessageVerifier;
-import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessage;
-import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierMessaging;
-import org.springframework.cloud.contract.verifier.messaging.internal.ContractVerifierObjectMapper;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import {{options.package}}.config.kafka.KafkaProcessor;
 import {{options.package}}.domain.*;
 
 @RunWith(SpringRunner.class)
@@ -44,12 +38,11 @@ public class {{namePascalCase}}Test {
    private static final Logger LOGGER = LoggerFactory.getLogger({{namePascalCase}}Test.class);
    
    @Autowired
+   private KafkaProcessor processor;
+   @Autowired
    private MessageCollector messageCollector;
    @Autowired
    private ApplicationContext applicationContext;
-
-   @Autowired
-   private MessageVerifier<Message<?>> messageVerifier;
 
    {{#aggregateList}}
    @Autowired
@@ -93,43 +86,38 @@ public class {{namePascalCase}}Test {
 
       ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
       try {
-         this.messageVerifier.send(MessageBuilder
-                .withPayload(event)
-                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
-                .setHeader("type", event.getEventType())
-                .build(), "{{../options.package}}");
+         String msg = objectMapper.writeValueAsString(event);
+
+         processor.inboundTopic().send(
+            MessageBuilder
+            .withPayload(msg)
+            .setHeader(
+               MessageHeaders.CONTENT_TYPE,
+               MimeTypeUtils.APPLICATION_JSON
+            )
+            .setHeader("type", event.getEventType())
+            .build()
+         );
 
          //then:
-         {{^ifEquals then.[0].type "Aggregate"}}
-         Message<?> receivedMessage = this.messageVerifier.receive("{{../options.package}}", 5000, TimeUnit.MILLISECONDS);
-         assertNotNull("Resulted event must be published", receivedMessage);
 
-         {{#outgoing "Event" ..}}
-         String receivedPayload = (String) receivedMessage.getPayload();
-         {{pascalCase name}} outputEvent = objectMapper.readValue(receivedPayload, {{pascalCase name}}.class);
-         {{/outgoing}}
+         Message<String> received = (Message<String>) messageCollector.forChannel(processor.outboundTopic()).poll();
+
+         assertNotNull("Resulted event must be published", received);
+
+      {{#outgoing "Event" ..}}
+         {{pascalCase name}} outputEvent = objectMapper.readValue((String)received.getPayload(), {{pascalCase name}}.class);
+      {{/outgoing}}
 
 
-         LOGGER.info("Response received: {}", outputEvent);
+         LOGGER.info("Response received: {}", received.getPayload());
 
-         {{#then}}
-         {{#each value}}
-         assertEquals(outputEvent.get{{pascalCase @key}}(), {{{toJava this}}});
-         {{/each}}
-         {{/then}}
-         {{/ifEquals}}
+      {{#then}}
+      {{#each value}}
+         assertEquals(String.valueOf(outputEvent.get{{pascalCase @key}}()), {{{toJava this}}});
+      {{/each}}
+      {{/then}}
 
-         {{#ifEquals then.[0].type "Aggregate"}}
-         {{../aggregateList.[0].namePascalCase}} result = repository.findById(entity.get{{../aggregateList.[0].keyFieldDescriptor.namePascalCase}}()).get();
-
-         LOGGER.info("Response received: {}", result);
-
-         {{#then}}
-         {{#each value}}
-         assertEquals(result.get{{pascalCase @key}}(), {{{toJava this}}});
-         {{/each}}
-         {{/then}}
-         {{/ifEquals}}
 
       } catch (JsonProcessingException e) {
          // TODO Auto-generated catch block
@@ -180,63 +168,3 @@ function convertToJavaSyntax(value) {
       throw new Error(`Unsupported type: ${type}`);
   }
 }
-
-window.$HandleBars.registerHelper('checkExamples', function (examples) {
-  if (!examples) return true;
-
-  function isAllNA(obj) {
-     // Vue Observer 객체를 일반 객체로 변환
-     obj = JSON.parse(JSON.stringify(obj));
-     
-     // null이나 undefined 체크
-     if (obj === null || obj === undefined) {
-        return true;
-     }
-     
-     // 문자열인 경우
-     if (typeof obj === 'string') {
-        return obj === "N/A";  // N/A인 경우 true
-     }
-     
-     // 숫자인 경우
-     if (typeof obj === 'number') {
-        return false;  // 숫자가 있으면 N/A가 아님
-     }
-     
-     // 배열 검사
-     if (Array.isArray(obj)) {
-        return obj.every(item => isAllNA(item));  // 모든 요소가 N/A여야 true
-     }
-     
-     // 객체 검사
-     if (typeof obj === 'object') {
-        return Object.values(obj).every(value => isAllNA(value));  // 모든 값이 N/A여야 true
-     }
-     
-     return false;
-  }
-
-  // examples를 순수 객체로 변환
-  examples = JSON.parse(JSON.stringify(examples));
-  
-  for (let example of examples) {
-     let allNA = true;
-     
-     for (let key of ['given', 'when', 'then']) {
-        if (example[key]?.[0]?.value) {
-           if (!isAllNA(example[key][0].value)) {
-              allNA = false;
-              break;
-           }
-        }
-     }
-     
-     if (!allNA) {
-        return false;  // 하나라도 N/A가 아닌 값이 있으면 false
-     }
-  }
-  
-  return true;  // 모든 값이 N/A인 경우 true
-});
-
-</function>
